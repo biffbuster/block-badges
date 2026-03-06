@@ -33,19 +33,6 @@
   <img src="public/cards/whale_activity.png" alt="Whale Activity" width="180" />
 </p>
 
-<p align="center">
-  <img src="public/cards/base_bull.png" alt="Base Bull" width="180" />
-  <img src="public/cards/multi-chain.png" alt="Multichain Maximalist" width="180" />
-  <img src="public/cards/memecoin.png" alt="The Memecoiner" width="180" />
-  <img src="public/cards/nft_20k.png" alt="NFT Upper Class" width="180" />
-</p>
-
-<p align="center">
-  <img src="public/cards/art_blocks.png" alt="Fine Art Collector" width="180" />
-  <img src="public/cards/emn_rug.png" alt="Rug Pull Survivor" width="180" />
-  <img src="public/cards/base_builder.png" alt="Base Builder" width="180" />
-  <img src="public/cards/nft_screens.png" alt="NFT Screens" width="180" />
-</p>
 
 ---
 
