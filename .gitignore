@@ -32,9 +32,16 @@ yarn-error.log*
 .env.development
 .env.production
 
-# foundry build artifacts
+# foundry build artifacts + dependencies
 contracts/out/
 contracts/cache/
+contracts/lib/
+
+# source design files (not needed at runtime)
+/card_designs/
+
+# large media (host externally)
+public/block_badge_demo.mov
 
 # vercel
 .vercel
