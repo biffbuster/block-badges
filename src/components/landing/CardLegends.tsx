@@ -72,21 +72,20 @@ export default function CardLegends() {
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              className="flex-1 max-w-lg"
+              className="flex-1 max-w-xl"
             >
-              <h2 className="font-display text-4xl sm:text-5xl md:text-6xl leading-[1.1] mb-6">
-                Meet Your
-                <br />
-                <span className="gradient-text">Card Legends!</span>
+              <h2 className="font-display text-5xl sm:text-6xl md:text-7xl leading-[1.1] mb-6">
+                <span className="text-white">Proof-Of-</span><span className="gradient-text">Achievement</span>
               </h2>
               <p className="text-zinc-400 leading-relaxed mb-8">
-                Get up close with the rarest onchain achievement cards. Discover
-                exclusive tiers, pull legendary badges, and show off your crypto
-                journey. New drops are coming — these are cards you won&apos;t
-                want to miss!
+                Flex your historic moments onchain with style. Discover and explore
+                a variety of achievements, and unlock them by verifying query is
+                accurate and data is untampered. Powered by Space and Time&apos;s
+                ZK-proven queries. New drops each week! Start unlocking badges and
+                begin your journey!
               </p>
               <button className="group px-7 py-3.5 text-sm font-bold rounded-full bg-gradient-to-r from-accent-orange to-accent-amber text-white hover:shadow-lg hover:shadow-accent-orange/25 transition-all flex items-center gap-2">
-                Open Packs
+                View Badges
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </button>
             </motion.div>
@@ -96,7 +95,7 @@ export default function CardLegends() {
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              className="flex-1 flex justify-center"
+              className="flex-1 flex justify-end"
             >
               <div className="relative w-[480px] h-[520px]">
                 {/* Sparkles — larger and brighter */}

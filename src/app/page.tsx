@@ -17,7 +17,8 @@ export default function Home() {
         <LogoBanner />
         <CardLegends />
         <Features />
-        <HowItWorks />
+        <div className="py-16 sm:py-24" />
+        <HowItWorks showOverview={false} />
         <Showcase />
         <FAQ />
       </main>

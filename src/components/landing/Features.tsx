@@ -253,7 +253,7 @@ export default function Features() {
                 {/* Back face */}
                 <div className="card-3d-back">
                   <Image
-                    src="/cardback.jpg"
+                    src="/cards/cardback.png"
                     alt="Card Back"
                     width={460}
                     height={644}

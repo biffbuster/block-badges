@@ -15,6 +15,7 @@ const rowOneCards = [
   { src: "/cards/diamond_hands.png", name: "Diamond Hands" },
   { src: "/cards/2.png", name: "Ethereum Villager" },
   { src: "/cards/8.png", name: "Sandwich'd" },
+  { src: "/cards/base_builder_card.png", name: "Base Builder" },
   { src: "/cards/10.png", name: "Bullseye" },
 ];
 

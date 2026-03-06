@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const heroCards = [
-  { src: "/cards/nft_flipper (2).png", alt: "NFT Flipper", beam: "#8b5cf6" },
+  { src: "/cards/8.png", alt: "Sandwich'd", beam: "#84cc16" },
   { src: "/cards/gas_guzzler.png", alt: "Gas Guzzler", beam: "#f97316" },
   { src: "/cards/etherean (2).png", alt: "The Etherean", beam: "#60a5fa" },
   { src: "/cards/multi-chain.png", alt: "Multichain Maximalist", beam: "#c084fc" },

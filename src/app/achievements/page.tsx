@@ -346,6 +346,17 @@ const allCards = [
     tier: "Legendary",
   },
   {
+    id: "base-builder",
+    name: "Base Builder",
+    description: "Deploy a smart contract on Base mainnet.",
+    image: "/cards/base_builder_card.png",
+    category: "Multi",
+    chain: "base",
+    points: 300,
+    glowColor: "#0052FF",
+    tier: "Intermediate",
+  },
+  {
     id: "squiggler",
     name: "Squiggler",
     description: "Hold one Squiggle by Snowfro in your wallet.",

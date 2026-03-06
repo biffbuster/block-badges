@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Play, Sparkles, Mail, KeyRound, User, Database, Lock, Zap, Globe } from "lucide-react";
+import { Play, Sparkles, Mail, KeyRound, User, Database, Lock as LockIcon, Zap, Globe } from "lucide-react";
 
 /* ─── Sparkle animation ─── */
 function Sparkle({
@@ -133,11 +133,11 @@ function Step2Visual() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/[0.08] rounded-full blur-3xl" />
 
       <div className="relative">
-        {/* Card */}
+        {/* Card (locked) */}
         <motion.div
           animate={{ rotate: -3 }}
           transition={{ type: "spring", stiffness: 200 }}
-          className="card-3d w-[140px]"
+          className="card-3d w-[140px] relative"
           style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.5), 0 0 30px rgba(59,130,246,0.08)" }}
         >
           <Image
@@ -147,6 +147,15 @@ function Step2Visual() {
             height={196}
             className="w-full h-auto"
           />
+          {/* Lock overlay */}
+          <div className="absolute inset-0 bg-black/85 rounded-xl flex items-center justify-center">
+            <div className="flex flex-col items-center gap-1.5">
+              <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                <LockIcon className="w-5 h-5 text-zinc-500" />
+              </div>
+              <span className="text-[9px] text-zinc-500 font-medium">Locked</span>
+            </div>
+          </div>
         </motion.div>
 
         {/* Run button */}
@@ -326,7 +335,7 @@ const stepData = [
 ];
 
 /* ─── Main component ─── */
-export default function HowItWorks() {
+export default function HowItWorks({ showOverview = true }: { showOverview?: boolean }) {
   return (
     <section id="how-it-works" className="relative pt-6 sm:pt-8 pb-28 sm:pb-36 px-6 overflow-hidden">
       {/* Background ambient */}
@@ -336,87 +345,91 @@ export default function HowItWorks() {
 
       <div className="relative max-w-7xl mx-auto">
         {/* ─── Cloud banner ─── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="relative overflow-hidden rounded-2xl mb-16 sm:mb-20 border border-white/[0.06]"
-        >
-          {/* Video background */}
-          <div className="absolute inset-0 overflow-hidden">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover"
-            >
-              <source src="/hero-bg.mp4" type="video/mp4" />
-            </video>
-            <div className="absolute inset-0 bg-bg-primary/70" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,#060611_100%)]" />
-          </div>
+        {showOverview && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className="relative overflow-hidden rounded-2xl mb-16 sm:mb-20 border border-white/[0.06]"
+          >
+            {/* Video background */}
+            <div className="absolute inset-0 overflow-hidden">
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+              >
+                <source src="/hero-bg.mp4" type="video/mp4" />
+              </video>
+              <div className="absolute inset-0 bg-bg-primary/70" />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,#060611_100%)]" />
+            </div>
 
-          {/* Content */}
-          <div className="relative z-10 px-8 sm:px-10 py-8 sm:py-10 flex flex-col sm:flex-row items-start sm:items-center gap-6">
-            <div className="flex-1">
-              <h2 className="font-display text-2xl sm:text-3xl text-white mb-2 tracking-tight">
-                Block Badges
-              </h2>
-              <p className="text-sm text-zinc-400 leading-relaxed max-w-xl">
-                ZK-verified onchain achievement cards powered by Space and Time. Prove what your wallet did with cryptographic proof, not screenshots.
-              </p>
+            {/* Content */}
+            <div className="relative z-10 px-8 sm:px-10 py-8 sm:py-10 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+              <div className="flex-1">
+                <h2 className="font-display text-2xl sm:text-3xl text-white mb-2 tracking-tight">
+                  Block Badges
+                </h2>
+                <p className="text-sm text-zinc-400 leading-relaxed max-w-xl">
+                  ZK-verified onchain achievement cards powered by Space and Time. Prove what your wallet did with cryptographic proof, not screenshots.
+                </p>
+              </div>
+              <div className="flex items-center gap-3 flex-shrink-0 flex-wrap">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass text-xs">
+                  <span className="text-emerald-400/80">&#10003;</span>
+                  <span className="text-zinc-300">Proof of SQL</span>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass text-xs">
+                  <span className="text-blue-400/80">&#9671;</span>
+                  <span className="text-zinc-300">Base Mainnet</span>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass text-xs">
+                  <span className="text-amber-400/80">&#9733;</span>
+                  <span className="text-zinc-300">Soulbound</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-3 flex-shrink-0 flex-wrap">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass text-xs">
-                <span className="text-emerald-400/80">&#10003;</span>
-                <span className="text-zinc-300">Proof of SQL</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass text-xs">
-                <span className="text-blue-400/80">&#9671;</span>
-                <span className="text-zinc-300">Base Mainnet</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass text-xs">
-                <span className="text-amber-400/80">&#9733;</span>
-                <span className="text-zinc-300">Soulbound</span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
 
         {/* ─── Block Badge overview / mission ─── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-20 sm:mb-28"
-        >
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white mb-6">
-            <span className="gradient-text">Overview</span>
-          </h2>
+        {showOverview && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className="text-center mb-20 sm:mb-28"
+          >
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-white mb-6">
+              <span className="gradient-text">Overview</span>
+            </h2>
 
-          <div className="max-w-3xl mx-auto space-y-5 text-zinc-400 text-base sm:text-lg leading-relaxed">
-            <p>
-              Block Badges turns your raw onchain history into collectible, verifiable achievement cards.
-              Every badge is backed by a ZK SQL query that runs against real blockchain data indexed
-              by <span className="text-white font-medium">Space and Time</span>. No screenshots. No
-              self-reported stats. Just cold, hard, cryptographically proven facts about what your
-              wallet actually did.
-            </p>
-            <p>
-              The whole thing lives on <span className="text-white font-medium">Base</span>. You pick a badge,
-              hit verify, and a Proof of SQL query fires off against SXT&apos;s indexed chain data. The result
-              comes back with a ZK-SNARK attached, so nobody can fake it, edit it, or argue about it. If the
-              proof checks out, your badge gets minted as a soulbound token straight to your wallet.
-            </p>
-            <p>
-              Think of it like onchain credential flexing, except every flex is mathematically verified. Held
-              100 ETH? Prove it. Survived three bear markets? There&apos;s a badge for that. Spent a small fortune
-              on gas? Yeah, we track that too. Your wallet tells a story and Block Badges lets you collect the
-              highlights.
-            </p>
-          </div>
-        </motion.div>
+            <div className="max-w-3xl mx-auto space-y-5 text-zinc-400 text-base sm:text-lg leading-relaxed">
+              <p>
+                Block Badges turns your raw onchain history into collectible, verifiable achievement cards.
+                Every badge is backed by a ZK SQL query that runs against real blockchain data indexed
+                by <span className="text-white font-medium">Space and Time</span>. No screenshots. No
+                self-reported stats. Just cold, hard, cryptographically proven facts about what your
+                wallet actually did.
+              </p>
+              <p>
+                The whole thing lives on <span className="text-white font-medium">Base</span>. You pick a badge,
+                hit verify, and a Proof of SQL query fires off against SXT&apos;s indexed chain data. The result
+                comes back with a ZK-SNARK attached, so nobody can fake it, edit it, or argue about it. If the
+                proof checks out, your badge gets minted as a soulbound token straight to your wallet.
+              </p>
+              <p>
+                Think of it like onchain credential flexing, except every flex is mathematically verified. Held
+                100 ETH? Prove it. Survived three bear markets? There&apos;s a badge for that. Spent a small fortune
+                on gas? Yeah, we track that too. Your wallet tells a story and Block Badges lets you collect the
+                highlights.
+              </p>
+            </div>
+          </motion.div>
+        )}
 
         {/* ─── Section header ─── */}
         <motion.div
@@ -552,7 +565,7 @@ export default function HowItWorks() {
                   playsInline
                   className="absolute inset-0 w-full h-full object-cover"
                 >
-                  <source src="/block_badge_demo.mov" type="video/mp4" />
+                  <source src="https://pub-622badb2718449348539acc019fd4887.r2.dev/block_badge_demo.mov" type="video/mp4" />
                 </video>
               </div>
             </div>
@@ -617,7 +630,7 @@ export default function HowItWorks() {
               <div className="absolute inset-0 rounded-2xl shimmer opacity-5 pointer-events-none" />
               <div className="relative">
                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-5">
-                  <Lock className="w-5 h-5 text-blue-400" />
+                  <LockIcon className="w-5 h-5 text-blue-400" />
                 </div>
                 <h4 className="text-white font-bold text-lg mb-3">ZK-SNARK Proof</h4>
                 <p className="text-sm text-zinc-400 leading-relaxed">
