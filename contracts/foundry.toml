@@ -1,0 +1,25 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib", "dependencies"]
+solc = "0.8.30"
+optimizer = true
+optimizer_runs = 4294967295
+evm_version = "prague"
+via_ir = true
+
+[soldeer]
+remappings_generate = false
+
+[dependencies]
+forge-std = "1.10.0"
+"@openzeppelin-contracts" = "5.2.0"
+"sxt-proof-of-sql" = { version = "0.123.10", url = "https://github.com/spaceandtimefdn/sxt-proof-of-sql/releases/download/solidity-v0.123.10/sxt-proof-of-sql-v0.123.10.zip" }
+
+[rpc_endpoints]
+base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
+base = "${BASE_RPC_URL}"
+
+[etherscan]
+base_sepolia = { key = "${BASESCAN_API_KEY}", url = "https://api-sepolia.basescan.org/api" }
+base = { key = "${BASESCAN_API_KEY}", url = "https://api.basescan.org/api" }

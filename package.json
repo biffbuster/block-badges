@@ -2,25 +2,45 @@
   "name": "chaintitles",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
+    "@prisma/adapter-neon": "^7.4.1",
+    "@prisma/client": "^7.4.1",
+    "@privy-io/react-auth": "^3.16.0",
+    "@privy-io/wagmi": "^4.0.2",
+    "@tanstack/react-query": "^5.90.21",
+    "framer-motion": "^12.34.3",
+    "gsap": "^3.14.2",
+    "lucide-react": "^0.575.0",
+    "next": "14.2.35",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.35"
+    "sxt-proof-of-sql-sdk": "^0.53.2",
+    "viem": "^2.46.3",
+    "wagmi": "^2.19.5"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
+    "dotenv": "^17.3.1",
     "eslint": "^8",
-    "eslint-config-next": "14.2.35"
+    "eslint-config-next": "14.2.35",
+    "postcss": "^8",
+    "prisma": "^7.4.1",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
   }
 }

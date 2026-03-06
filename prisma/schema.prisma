@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Wallet ────────────────────────────────────────────
+// Every wallet that connects to the app.
+model Wallet {
+  id        String   @id @default(cuid())
+  address   String   @unique // lowercase 0x address
+  firstSeen DateTime @default(now())
+  lastSeen  DateTime @updatedAt
+
+  badges BadgeMint[]
+
+  @@map("wallets")
+}
+
+// ─── Badge Definition ──────────────────────────────────
+// Single source of truth for every badge in the system.
+// The API, frontend, and contract all reference this.
+// Add/retire badges here without redeploying code.
+model BadgeDefinition {
+  id          String  @id // matches card id ("etherean", "gas-guzzler", etc.)
+  name        String // display name ("The Etherean")
+  description String // short requirement text
+  lore        String? // fun storyline flavor text
+
+  // ── Query ──
+  sqlTemplate String // SQL with {wallet} placeholder
+  chain       String // "Ethereum", "Bitcoin", "Base", etc.
+  category    String // "Ethereum", "NFT", "DeFi", "Multi"
+  tier        String // "Easy", "Intermediate", "Hard", "Veteran"
+  points      Int
+
+  // ── Visual ──
+  imageURI    String? // IPFS link for the card art / SBT image
+  metadataURI String? // IPFS link to the ERC-721 metadata JSON
+  glowColor   String  @default("#f97316") // hex color for UI glow
+
+  // ── State ──
+  active    Boolean  @default(true) // false = retired, can't earn anymore
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mints BadgeMint[]
+
+  @@map("badge_definitions")
+}
+
+// ─── Badge Mint ────────────────────────────────────────
+// Tracks the full lifecycle of a badge claim:
+//   PENDING → QUERYING → PROVING → MINTING → MINTED
+//                                           → FAILED
+//
+// The SBT's existence onchain IS the proof certificate.
+// It can only be minted if ZKpay's onchain verifier
+// confirms the Proof of SQL result via our contract.
+model BadgeMint {
+  id       String @id @default(cuid())
+  walletId String
+  badgeId  String // FK → BadgeDefinition.id
+
+  // ── Status ──
+  status    MintStatus @default(PENDING)
+  qualified Boolean    @default(false)
+  error     String? // populated when status = FAILED
+
+  // ── Query & Proof ──
+  sqlQuery  String? // the SQL query that was proven
+  proofPlan String? // hex-encoded EVMProofPlan submitted to ZKpay
+
+  // ── Onchain: ZKpay ──
+  // Three separate tx hashes trace the full onchain path:
+  zkpayTxHash    String? // 1. our call to the ZKpay relayer contract
+  verifierTxHash String? // 2. the onchain verifier validating the proof
+  mintTxHash     String? @unique // 3. the SBT mint in zkPayCallback
+
+  // ── Onchain: SBT ──
+  tokenId     BigInt? // the minted SBT token ID
+  metadataURI String? // IPFS/URL to the NFT metadata JSON
+  chainId     Int     @default(8453) // 11155111 = Ethereum Sepolia (where ZKpay lives)
+
+  // ── Proof Anchor ──
+  // The block the ZK proof is anchored to — proves the data snapshot point
+  proofBlockHash   String?
+  proofBlockNumber BigInt?
+
+  // ── Payment ──
+  paymentToken  String? // "USDC" or "SXT"
+  paymentAmount String? // amount paid (stored as string to avoid precision loss)
+
+  // ── Timestamps ──
+  createdAt DateTime  @default(now())
+  mintedAt  DateTime? // set when SBT mint confirms onchain
+
+  wallet Wallet          @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  badge  BadgeDefinition @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([walletId, badgeId]) // one badge per wallet
+  @@index([status])
+  @@index([mintTxHash])
+  @@index([chainId])
+  @@map("badge_mints")
+}
+
+enum MintStatus {
+  PENDING  // user initiated, not yet started
+  QUERYING // SQL query submitted to SXT
+  PROVING  // ZK proof generation in progress
+  MINTING  // ZKpay verified, SBT mint tx submitted
+  MINTED   // SBT mint confirmed onchain — the proof certificate
+  FAILED   // something went wrong (see error field)
+}
