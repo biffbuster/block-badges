@@ -481,17 +481,17 @@ export default function CardDetailPage() {
     mint,
     status: mintStatus,
     data: mintData,
-    error: mintError,
+    error: _mintError,
     reset: resetMint,
   } = useMintBadge();
   const {
     verify: verifyOnChain,
     step: onChainStep,
-    result: onChainResult,
+    result: _onChainResult,
     error: onChainError,
     reset: resetOnChain,
     sxtBalance,
-    approveTxHash: onChainApproveTx,
+    approveTxHash: _onChainApproveTx,
     verifyTxHash: onChainVerifyTx,
   } = useVerifyBadgeOnChain();
   const [elapsed, setElapsed] = useState(0);

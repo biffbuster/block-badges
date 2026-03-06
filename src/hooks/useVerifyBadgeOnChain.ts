@@ -63,13 +63,13 @@ export function useVerifyBadgeOnChain() {
   // ─── Contract writes ────────────────────────────────────
   const {
     writeContract: writeApprove,
-    isPending: isApprovePending,
+    isPending: _isApprovePending,
     error: approveError,
   } = useWriteContract();
 
   const {
     writeContract: writeVerify,
-    isPending: isVerifyPending,
+    isPending: _isVerifyPending,
     error: verifyError,
   } = useWriteContract();
 

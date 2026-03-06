@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Play, ShieldCheck, Sparkles, Mail, KeyRound, User, Database, Lock, Zap, Globe } from "lucide-react";
+import { Play, Sparkles, Mail, KeyRound, User, Database, Lock, Zap, Globe } from "lucide-react";
 
 /* ─── Sparkle animation ─── */
 function Sparkle({
