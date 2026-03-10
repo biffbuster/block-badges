@@ -684,7 +684,7 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Title */}
-                  <h1 className="font-display text-4xl sm:text-5xl md:text-6xl text-white mb-5 tracking-tight">
+                  <h1 className="font-display text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-white mb-5 tracking-tight">
                     All Cards
                   </h1>
 

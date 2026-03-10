@@ -40,8 +40,10 @@ function gatewayToSxTResult(rows: Record<string, unknown>[]): SxTResult {
 }
 
 export async function queryAndVerify(sql: string): Promise<SxTResult> {
-  console.log("[SXT] ═══ Starting gateway query ═══");
-  console.log("[SXT] SQL:", sql.substring(0, 120));
+  if (process.env.NODE_ENV !== "production") {
+    console.log("[SXT] ═══ Starting gateway query ═══");
+    console.log("[SXT] SQL:", sql.substring(0, 120));
+  }
 
   const apiKey = process.env.SXT_API_KEY;
   if (!apiKey || apiKey === "your_sxt_api_key_here") {
@@ -80,7 +82,9 @@ export async function queryAndVerify(sql: string): Promise<SxTResult> {
   const rows: Record<string, unknown>[] = await resp.json();
   const result = gatewayToSxTResult(rows);
 
-  console.log("[SXT] ═══ Query complete ═══");
-  console.log("[SXT] Rows:", rows.length, "Result:", JSON.stringify(result));
+  if (process.env.NODE_ENV !== "production") {
+    console.log("[SXT] ═══ Query complete ═══");
+    console.log("[SXT] Rows:", rows.length, "Result:", JSON.stringify(result));
+  }
   return result;
 }

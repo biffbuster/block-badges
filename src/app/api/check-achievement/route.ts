@@ -143,7 +143,7 @@ export async function POST(req: NextRequest) {
       tokenId: badgeMint.tokenId?.toString() ?? null,
     });
   } catch (error) {
-    console.error("Achievement check failed:", error);
+    if (process.env.NODE_ENV !== "production") console.error("Achievement check failed:", error);
     const message =
       error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json(

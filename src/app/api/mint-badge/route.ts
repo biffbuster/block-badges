@@ -167,7 +167,7 @@ export async function POST(req: NextRequest) {
       explorerUrl: `https://basescan.org/tx/${txHash}`,
     });
   } catch (error) {
-    console.error("Mint badge failed:", error);
+    if (process.env.NODE_ENV !== "production") console.error("Mint badge failed:", error);
     const message =
       error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json({ error: message }, { status: 500 });

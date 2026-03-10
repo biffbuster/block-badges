@@ -103,6 +103,11 @@ body {
   100% { background-position: 200% 0; }
 }
 
+@keyframes shimmer-sweep {
+  0%, 100% { transform: translateX(-100%); opacity: 0; }
+  50% { transform: translateX(100%); opacity: 1; }
+}
+
 /* Card glare — diagonal light sweep */
 .card-glare {
   position: relative;
@@ -546,6 +551,22 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #2a2a4a;
+}
+
+/* ─── Badge float + shine ─── */
+@keyframes badge-float {
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-8px); }
+}
+
+@keyframes badge-shine-loop {
+  0%   { left: -30%; }
+  25%  { left: 110%; }
+  100% { left: 110%; }
+}
+
+.badge-shine-streak {
+  animation: badge-shine-loop 4s ease-in-out infinite;
 }
 
 /* Smooth scroll */

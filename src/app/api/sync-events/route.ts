@@ -204,7 +204,7 @@ export async function POST() {
       mintedEvents: mintedLogs.length,
     });
   } catch (error) {
-    console.error("Sync events failed:", error);
+    if (process.env.NODE_ENV !== "production") console.error("Sync events failed:", error);
     const message =
       error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json({ error: message }, { status: 500 });
