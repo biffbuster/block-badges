@@ -90,89 +90,73 @@ export default function CardLegends() {
               </button>
             </motion.div>
 
-            {/* Right — stacked cards with sparkles */}
+            {/* Right — stacked badges with sparkles */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               className="flex-1 flex justify-end"
             >
-              <div className="relative w-[480px] h-[520px]">
-                {/* Sparkles — larger and brighter */}
-                <Sparkle
-                  className="absolute -top-6 right-14"
-                  size={32}
-                  delay={0}
-                />
-                <Sparkle
-                  className="absolute top-10 -right-8"
-                  size={38}
-                  delay={0.6}
-                />
-                <Sparkle
-                  className="absolute top-1/3 -left-10"
-                  size={28}
-                  delay={1.2}
-                />
-                <Sparkle
-                  className="absolute bottom-16 right-2"
-                  size={34}
-                  delay={1.8}
-                />
-                <Sparkle
-                  className="absolute -top-4 left-16"
-                  size={22}
-                  delay={0.4}
-                />
-                <Sparkle
-                  className="absolute bottom-4 left-6"
-                  size={36}
-                  delay={2.2}
-                />
-                <Sparkle
-                  className="absolute top-2/3 -right-6"
-                  size={26}
-                  delay={1.0}
-                />
-                <Sparkle
-                  className="absolute top-1/2 left-1/2"
-                  size={20}
-                  delay={1.5}
-                />
+              <div className="relative w-[520px] h-[560px]" style={{ perspective: "1200px" }}>
+                {/* Sparkles */}
+                <Sparkle className="absolute -top-6 right-14" size={32} delay={0} />
+                <Sparkle className="absolute top-10 -right-8" size={38} delay={0.6} />
+                <Sparkle className="absolute top-1/3 -left-10" size={28} delay={1.2} />
+                <Sparkle className="absolute bottom-16 right-2" size={34} delay={1.8} />
+                <Sparkle className="absolute -top-4 left-16" size={22} delay={0.4} />
+                <Sparkle className="absolute bottom-4 left-6" size={36} delay={2.2} />
+                <Sparkle className="absolute top-2/3 -right-6" size={26} delay={1.0} />
+                <Sparkle className="absolute top-1/2 left-1/2" size={20} delay={1.5} />
 
-                {/* Back card */}
+                {/* Back badge */}
                 <motion.div
-                  className="absolute top-0 right-0 w-[320px] card-3d"
+                  className="absolute top-0 right-0 w-[400px]"
                   animate={{ rotate: 8 }}
-                  whileHover={{ rotate: 4, scale: 1.03 }}
+                  whileHover={{ rotate: 4, scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 200 }}
                 >
-                  <Image
-                    src="/cards/card_03.png"
-                    alt="Happy Lending"
-                    width={320}
-                    height={448}
-                    className="w-full h-auto object-cover"
-                  />
+                  <div className="relative">
+                    <Image
+                      src="/badges/diamond_hands.png"
+                      alt="Diamond Hands"
+                      width={400}
+                      height={400}
+                      className="w-full h-auto object-contain drop-shadow-[0_8px_40px_rgba(0,0,0,0.5)]"
+                    />
+                    <div className="absolute inset-0 shimmer opacity-40 rounded-full pointer-events-none" />
+                  </div>
                 </motion.div>
 
-                {/* Front card */}
+                {/* Front badge — slow 3D oscillating turn */}
                 <motion.div
-                  className="absolute top-12 left-0 w-[320px] card-3d z-10"
-                  animate={{ rotate: -6 }}
-                  whileHover={{ rotate: -2, scale: 1.03 }}
-                  transition={{ type: "spring", stiffness: 200 }}
+                  className="absolute top-8 left-0 w-[420px] z-10"
+                  style={{ transformStyle: "preserve-3d" }}
+                  animate={{
+                    rotateY: [0, 18, 0, -18, 0],
+                    rotate: -6,
+                  }}
+                  transition={{
+                    rotateY: {
+                      duration: 8,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    },
+                    rotate: { duration: 0 },
+                  }}
                 >
-                  <Image
-                    src="/cards/art_blocks.png"
-                    alt="Fine Art Collector"
-                    width={320}
-                    height={448}
-                    className="w-full h-auto object-cover"
-                  />
+                  <div className="relative" style={{ transformStyle: "preserve-3d" }}>
+                    <Image
+                      src="/badges/art_collector.png"
+                      alt="Fine Art Collector"
+                      width={420}
+                      height={420}
+                      className="w-full h-auto object-contain drop-shadow-[0_8px_40px_rgba(0,0,0,0.5)]"
+                    />
+                    <div className="absolute inset-0 shimmer opacity-40 rounded-full pointer-events-none" />
+                  </div>
                 </motion.div>
 
-                {/* Ambient glow behind cards */}
+                {/* Ambient glow behind badges */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-accent-orange/[0.08] rounded-full blur-3xl pointer-events-none" />
               </div>
             </motion.div>

@@ -58,7 +58,7 @@ function Step1Visual() {
 
       {/* Sign-in card graphic */}
       <div
-        className="relative w-[200px] rounded-2xl p-5 space-y-3"
+        className="relative w-[160px] rounded-xl p-3.5 space-y-2"
         style={{
           background: "rgba(255,255,255,0.03)",
           border: "1px solid rgba(249,115,22,0.12)",
@@ -68,38 +68,38 @@ function Step1Visual() {
         {/* Avatar */}
         <div className="flex justify-center">
           <div
-            className="w-11 h-11 rounded-full flex items-center justify-center"
+            className="w-8 h-8 rounded-full flex items-center justify-center"
             style={{ background: "rgba(249,115,22,0.12)", border: "1.5px solid rgba(249,115,22,0.25)" }}
           >
-            <User className="w-5 h-5 text-accent-orange" />
+            <User className="w-3.5 h-3.5 text-accent-orange" />
           </div>
         </div>
-        <div className="text-center text-[12px] font-bold text-white">Sign In</div>
-        <div className="text-center text-[9px] text-zinc-600 -mt-2">or create an account</div>
+        <div className="text-center text-[10px] font-bold text-white">Sign In</div>
+        <div className="text-center text-[8px] text-zinc-600 -mt-1.5">or create an account</div>
 
         {/* Email mock */}
         <div
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg"
+          className="flex items-center gap-1.5 px-2 py-1 rounded-md"
           style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
         >
-          <Mail className="w-3 h-3 text-zinc-600" />
-          <span className="text-[10px] text-zinc-600">you@email.com</span>
+          <Mail className="w-2.5 h-2.5 text-zinc-600" />
+          <span className="text-[8px] text-zinc-600">you@email.com</span>
         </div>
 
         {/* Button */}
-        <div className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-accent-orange to-accent-amber text-white text-[11px] font-bold text-center">
+        <div className="px-2 py-1 rounded-md bg-gradient-to-r from-accent-orange to-accent-amber text-white text-[9px] font-bold text-center">
           Continue
         </div>
 
         {/* Divider */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <div className="flex-1 h-[1px] bg-white/[0.04]" />
-          <span className="text-[8px] text-zinc-600">or</span>
+          <span className="text-[7px] text-zinc-600">or</span>
           <div className="flex-1 h-[1px] bg-white/[0.04]" />
         </div>
 
         {/* Social row */}
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-1.5">
           {[
             { label: "G", color: "#ea4335" },
             { label: "X", color: "#1d9bf0" },
@@ -107,13 +107,13 @@ function Step1Visual() {
           ].map((opt) => (
             <div
               key={opt.label}
-              className="w-8 h-8 rounded-lg flex items-center justify-center"
+              className="w-6 h-6 rounded-md flex items-center justify-center"
               style={{ background: `${opt.color}10`, border: `1px solid ${opt.color}20` }}
             >
               {opt.label === "key" ? (
-                <KeyRound className="w-3 h-3" style={{ color: opt.color }} />
+                <KeyRound className="w-2.5 h-2.5" style={{ color: opt.color }} />
               ) : (
-                <span className="text-[10px] font-bold" style={{ color: opt.color }}>{opt.label}</span>
+                <span className="text-[8px] font-bold" style={{ color: opt.color }}>{opt.label}</span>
               )}
             </div>
           ))}
@@ -133,22 +133,35 @@ function Step2Visual() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/[0.08] rounded-full blur-3xl" />
 
       <div className="relative">
-        {/* Card (locked) */}
+        {/* Badge (locked) */}
         <motion.div
           animate={{ rotate: -3 }}
           transition={{ type: "spring", stiffness: 200 }}
-          className="card-3d w-[140px] relative"
-          style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.5), 0 0 30px rgba(59,130,246,0.08)" }}
+          className="w-[150px] relative"
         >
           <Image
-            src="/cards/gas_guzzler.png"
+            src="/badges/gas_guzzler.png"
             alt="Gas Guzzler"
-            width={140}
-            height={196}
-            className="w-full h-auto"
+            width={150}
+            height={150}
+            className="w-full h-auto object-contain"
+            style={{ filter: "drop-shadow(0 12px 40px rgba(0,0,0,0.5)) drop-shadow(0 0 30px rgba(59,130,246,0.08))" }}
           />
-          {/* Lock overlay */}
-          <div className="absolute inset-0 bg-black/85 rounded-xl flex items-center justify-center">
+          {/* Lock overlay — masked to badge shape */}
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{
+              WebkitMaskImage: "url(/badges/gas_guzzler.png)",
+              WebkitMaskSize: "contain",
+              WebkitMaskRepeat: "no-repeat",
+              WebkitMaskPosition: "center",
+              maskImage: "url(/badges/gas_guzzler.png)",
+              maskSize: "contain",
+              maskRepeat: "no-repeat",
+              maskPosition: "center",
+              background: "radial-gradient(ellipse at center, rgba(6,6,17,0.95) 0%, rgba(6,6,17,0.88) 100%)",
+            }}
+          >
             <div className="flex flex-col items-center gap-1.5">
               <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
                 <LockIcon className="w-5 h-5 text-zinc-500" />
@@ -275,16 +288,14 @@ function Step4Visual() {
           }}
         />
 
-        <div
-          className="card-3d w-[130px] relative"
-          style={{ boxShadow: "0 0 40px rgba(34,197,94,0.12), 0 16px 48px rgba(0,0,0,0.5)" }}
-        >
+        <div className="w-[150px] relative">
           <Image
-            src="/cards/card_03.png"
+            src="/badges/happy_lending.png"
             alt="Happy Lending"
-            width={130}
-            height={182}
-            className="w-full h-auto"
+            width={150}
+            height={150}
+            className="w-full h-auto object-contain"
+            style={{ filter: "drop-shadow(0 0 40px rgba(34,197,94,0.12)) drop-shadow(0 16px 48px rgba(0,0,0,0.5))" }}
           />
         </div>
 

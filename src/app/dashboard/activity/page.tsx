@@ -216,6 +216,30 @@ const activityData: ActivityRow[] = [
   },
 ];
 
+/* ─── Card → Badge image map ─── */
+const cardToBadge: Record<string, string> = {
+  "/cards/whale_activity.png": "/badges/whale_activity.png",
+  "/cards/diamond_hands.png": "/badges/diamond_hands.png",
+  "/cards/gas_guzzler.png": "/badges/gas_guzzler.png",
+  "/cards/base_bull.png": "/badges/base_bull.png",
+  "/cards/memecoin.png": "/badges/memecoiner.png",
+  "/cards/8.png": "/badges/sandwichd.png",
+  "/cards/9.png": "/badges/data_wrangler.png",
+  "/cards/10.png": "/badges/bullseye.png",
+  "/cards/11.png": "/badges/squiggler.png",
+  "/cards/nft_flipper (2).png": "/badges/nft_flipper.png",
+  "/cards/eth_steak.png": "/badges/validator.png",
+  "/cards/art_blocks.png": "/badges/art_collector.png",
+  "/cards/etherean (2).png": "/badges/etheran.png",
+  "/cards/multi-chain.png": "/badges/multichain_madness.png",
+  "/cards/opensea (2).png": "/badges/opensea_badge.png",
+  "/cards/nft_20k.png": "/badges/nft_upper_class.png",
+  "/cards/emn_rug.png": "/badges/rug_victi.png",
+  "/cards/base_builder.png": "/badges/base_builder.png",
+  "/cards/2.png": "/badges/vallager.png",
+  "/cards/avax_bull.jpg": "/badges/avax_bull.png",
+};
+
 /* ─── Tier styling ─── */
 const tierColors: Record<string, { color: string; bg: string; border: string }> = {
   Beginner: { color: "#4ade80", bg: "rgba(74,222,128,0.12)", border: "rgba(74,222,128,0.3)" },
@@ -386,15 +410,22 @@ export default function ActivityPage() {
                   borderBottom: "1px solid rgba(255,255,255,0.03)",
                 }}
               >
-                {/* Badge — image + name + tier */}
+                {/* Badge — badge image + name + tier */}
                 <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="w-12 h-[60px] rounded-lg overflow-hidden flex-shrink-0 border border-white/[0.06]">
+                  <div
+                    className="w-16 h-16 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden"
+                    style={{
+                      background: `linear-gradient(135deg, ${tier.bg}, rgba(255,255,255,0.03))`,
+                      border: `1px solid ${tier.border}`,
+                    }}
+                  >
                     <Image
-                      src={row.badge.image}
+                      src={cardToBadge[row.badge.image] || row.badge.image}
                       alt={row.badge.name}
-                      width={48}
-                      height={68}
-                      className="w-full h-full object-cover"
+                      width={56}
+                      height={56}
+                      className="w-14 h-14 object-contain"
+                      style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.5))" }}
                     />
                   </div>
                   <div className="min-w-0">

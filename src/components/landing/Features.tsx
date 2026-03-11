@@ -138,14 +138,10 @@ export default function Features() {
       // Phase 3: SQL fades out (42% → 52%)
       tl.to(sqlRef.current, { opacity: 0, x: -40, duration: 0.10 }, 0.42);
 
-      // Phase 4: Card spins full 360 (52% → 75%) — lock fades during first half of spin
+      // Phase 4: Badge spins, lock fades, overlay fades — badge revealed
       tl.to(
         cardRef.current,
-        {
-          rotateY: 360,
-          duration: 0.23,
-          ease: "power2.inOut",
-        },
+        { rotateY: 360, duration: 0.23, ease: "power2.inOut" },
         0.52
       );
       tl.to(lockRef.current, { opacity: 0, scale: 0.5, duration: 0.06 }, 0.54);
@@ -218,23 +214,61 @@ export default function Features() {
               {/* Ambient glow */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent-orange/[0.08] rounded-full blur-[80px] pointer-events-none" />
 
+{/* Badge 3D flip — front / edge / back */}
               <div
                 ref={cardRef}
-                className="card-3d-flip w-[360px] sm:w-[400px] md:w-[460px]"
+                className="relative z-[1] w-[420px] sm:w-[500px] md:w-[560px]"
+                style={{ transformStyle: "preserve-3d" }}
               >
-                {/* Front face */}
-                <div className="card-3d-front">
+                {/* ── Front face ── */}
+                <div style={{ backfaceVisibility: "hidden" }}>
                   <Image
-                    src="/cards/eth_steak.png"
+                    src="/badges/validator.png"
                     alt="ETH Validator"
-                    width={460}
-                    height={644}
+                    width={560}
+                    height={560}
+                    className="w-full h-auto object-contain"
+                    style={{ filter: "drop-shadow(0 24px 48px rgba(0,0,0,0.8)) drop-shadow(0 10px 24px rgba(96,165,250,0.25))" }}
                     priority
                   />
-                  {/* Dark overlay */}
+                  {/* Shine streak */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      WebkitMaskImage: "url(/badges/validator.png)",
+                      WebkitMaskSize: "contain",
+                      WebkitMaskRepeat: "no-repeat",
+                      WebkitMaskPosition: "center",
+                      maskImage: "url(/badges/validator.png)",
+                      maskSize: "contain",
+                      maskRepeat: "no-repeat",
+                      maskPosition: "center",
+                    }}
+                  >
+                    <div
+                      className="absolute top-[-20%] bottom-[-20%] badge-shine-streak"
+                      style={{
+                        width: "25%",
+                        background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12) 20%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.12) 80%, transparent)",
+                        transform: "skewX(-15deg)",
+                      }}
+                    />
+                  </div>
+                  {/* Dark overlay — masked to badge shape, fades out on scroll */}
                   <div
                     ref={overlayRef}
-                    className="absolute inset-0 bg-black/90 rounded-xl z-10 flex items-center justify-center"
+                    className="absolute inset-0 z-10 flex items-center justify-center"
+                    style={{
+                      WebkitMaskImage: "url(/badges/validator.png)",
+                      WebkitMaskSize: "contain",
+                      WebkitMaskRepeat: "no-repeat",
+                      WebkitMaskPosition: "center",
+                      maskImage: "url(/badges/validator.png)",
+                      maskSize: "contain",
+                      maskRepeat: "no-repeat",
+                      maskPosition: "center",
+                      background: "radial-gradient(ellipse at center, rgba(6,6,17,0.97) 0%, rgba(6,6,17,0.92) 100%)",
+                    }}
                   >
                     <div
                       ref={lockRef}
@@ -250,14 +284,45 @@ export default function Features() {
                   </div>
                 </div>
 
-                {/* Back face */}
-                <div className="card-3d-back">
+                {/* ── Edge layers — gives coin-like thickness ── */}
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div
+                    key={`edge-${i}`}
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      transform: `translateZ(${-i}px)`,
+                      backfaceVisibility: "hidden",
+                    }}
+                  >
+                    <Image
+                      src="/badges/validator.png"
+                      alt=""
+                      width={560}
+                      height={560}
+                      className="w-full h-auto object-contain"
+                      style={{
+                        filter: "brightness(0.15) drop-shadow(0 0 1px rgba(120,120,140,0.4))",
+                      }}
+                      aria-hidden="true"
+                    />
+                  </div>
+                ))}
+
+                {/* ── Back face ── */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    backfaceVisibility: "hidden",
+                    transform: "rotateY(180deg) translateZ(7px)",
+                  }}
+                >
                   <Image
-                    src="/cards/cardback.png"
-                    alt="Card Back"
-                    width={460}
-                    height={644}
-                    priority
+                    src="/badges/badge_back.png"
+                    alt="Block Badges"
+                    width={560}
+                    height={560}
+                    className="w-full h-auto object-contain"
+                    style={{ filter: "drop-shadow(0 24px 48px rgba(0,0,0,0.8))" }}
                   />
                 </div>
               </div>
@@ -409,7 +474,7 @@ export default function Features() {
                 <Sparkle className="absolute -bottom-6 right-1/3" size={28} delay={2.4} />
 
                 <span className="inline-block text-xs font-semibold uppercase tracking-widest text-accent-orange mb-4 px-3 py-1 rounded-full border border-accent-orange/20 bg-accent-orange/5">
-                  Featured Card
+                  Featured Badge
                 </span>
                 <h3 className="font-display text-4xl sm:text-5xl text-white mb-4 leading-[1.1]">
                   ETH Validator

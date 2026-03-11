@@ -20,11 +20,13 @@ import {
   Loader2,
   Zap,
   Trophy,
-  Link as LinkIcon,
   Clock,
   ExternalLink,
   Gem,
   Wallet,
+  Database,
+  Fingerprint,
+  Layers,
 } from "lucide-react";
 
 /* ─── Card data (same source of truth as dashboard) ─── */
@@ -292,6 +294,29 @@ const allCards = [
     tier: "Beginner",
   },
 ];
+
+/* ─── Badge image map ─── */
+const badgeImages: Record<string, string> = {
+  "etherean": "/badges/etheran.png",
+  "gas-guzzler": "/badges/gas_guzzler.png",
+  "nft-flipper": "/badges/nft_flipper.png",
+  "multichain": "/badges/multichain_madness.png",
+  "opensea": "/badges/opensea_badge.png",
+  "art-blocks": "/badges/art_collector.png",
+  "card-01": "/badges/diamond_hands.png",
+  "card-02": "/badges/vallager.png",
+  "emn-rug": "/badges/rug_victi.png",
+  "eth-steak": "/badges/validator.png",
+  "memecoin": "/badges/memecoiner.png",
+  "nft-20k": "/badges/nft_upper_class.png",
+  "contract-deployer": "/badges/contributor.png",
+  "base-bull": "/badges/base_bull.png",
+  "avax-bull": "/badges/avax_bull.png",
+  "diamond-hands": "/badges/diamond_hands.png",
+  "whale-activity": "/badges/whale_activity.png",
+  "ethereum-villager": "/badges/vallager.png",
+  "the-contributor": "/badges/contributor.png",
+};
 
 const tierColors: Record<string, string> = {
   Beginner: "#22c55e",
@@ -573,7 +598,7 @@ export default function CardDetailPage() {
 
   if (!card) {
     return (
-      <DashboardLayout>
+      <DashboardLayout compact>
           <div className="text-center py-32">
             <p className="text-zinc-500 text-lg">Card not found</p>
             <Link
@@ -636,7 +661,7 @@ export default function CardDetailPage() {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout compact>
           {/* Back button */}
           <motion.div
             initial={{ opacity: 0, x: -10 }}
@@ -652,7 +677,7 @@ export default function CardDetailPage() {
           </motion.div>
 
           {/* Main layout: Card left, Info right */}
-          <div className="grid grid-cols-1 lg:grid-cols-[580px_1fr] gap-16 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(400px,660px)_1fr] gap-8 sm:gap-12 lg:gap-16 items-start">
             {/* ─── LEFT: Large card with 3D tilt ─── */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -669,56 +694,138 @@ export default function CardDetailPage() {
                 }}
               />
 
-              {/* Card frame with 3D tilt */}
+              {/* Card frame — invisible when locked, card art revealed when unlocked */}
               <div
-                ref={cardRef}
-                onMouseMove={handleMouseMove}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={handleMouseLeave}
-                className="card-3d relative overflow-hidden cursor-pointer"
+                className="card-3d relative overflow-hidden transition-all duration-700"
                 style={{
-                  transition: "transform 0.15s ease-out, box-shadow 0.4s ease",
-                  transformStyle: "preserve-3d",
-                  boxShadow: isHovered
+                  background: isUnlocked ? "#060611" : "transparent",
+                  boxShadow: isUnlocked
                     ? `
-                      0 2px 0 0 rgba(255,255,255,0.1),
-                      0 -2px 0 0 rgba(0,0,0,0.4),
-                      0 20px 60px rgba(0,0,0,0.7),
-                      0 40px 100px rgba(0,0,0,0.5),
-                      0 0 80px ${card.glowColor}25,
-                      0 0 120px ${card.glowColor}10,
-                      inset 0 1px 0 rgba(255,255,255,0.15),
-                      inset 0 -1px 0 rgba(0,0,0,0.3)
-                    `
-                    : `
-                      0 2px 0 0 rgba(255,255,255,0.08),
-                      0 -2px 0 0 rgba(0,0,0,0.4),
-                      0 12px 40px rgba(0,0,0,0.6),
-                      0 24px 80px rgba(0,0,0,0.4),
-                      0 0 60px ${card.glowColor}${isUnlocked ? "30" : "10"},
-                      inset 0 1px 0 rgba(255,255,255,0.12),
-                      inset 0 -1px 0 rgba(0,0,0,0.3)
-                    `,
+                    0 2px 0 0 rgba(255,255,255,0.08),
+                    0 -2px 0 0 rgba(0,0,0,0.4),
+                    0 12px 40px rgba(0,0,0,0.6),
+                    0 24px 80px rgba(0,0,0,0.4),
+                    0 0 60px ${card.glowColor}30,
+                    inset 0 1px 0 rgba(255,255,255,0.12),
+                    inset 0 -1px 0 rgba(0,0,0,0.3)
+                  `
+                    : "none",
                 }}
               >
+                {/* Card image — invisible when locked (still occupies space for sizing), blurred when unlocked */}
                 <Image
                   src={card.image}
-                  alt={card.name}
+                  alt=""
                   width={580}
                   height={812}
                   className="w-full h-auto"
                   priority
                   style={{
-                    filter: isUnlocked
-                      ? "none"
-                      : "grayscale(0.6) brightness(0.5)",
-                    transition: "filter 0.8s ease-out",
+                    filter: isUnlocked ? "blur(6px) brightness(0.4)" : "none",
+                    opacity: isUnlocked ? 1 : 0,
+                    transition: "filter 0.8s ease-out, opacity 0.8s ease-out",
                   }}
                 />
+                {isUnlocked && (
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: "rgba(6,6,17,0.3)" }}
+                  />
+                )}
+
+                {/* Badge — the main element with 3D tilt */}
+                <div className="absolute inset-0 flex items-center justify-center z-10">
+                  {/* Tilt wrapper — plain div so ref.style.transform works */}
+                  <div
+                    ref={cardRef}
+                    onMouseMove={handleMouseMove}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={handleMouseLeave}
+                    className="relative w-[95%] cursor-pointer"
+                    style={{
+                      transition: "transform 0.15s ease-out",
+                      transformStyle: "preserve-3d",
+                    }}
+                  >
+                  {/* Filter animation wrapper */}
+                  <motion.div
+                    className="relative"
+                    initial={false}
+                    animate={{
+                      filter: isUnlocked
+                        ? `drop-shadow(0 16px 40px rgba(0,0,0,0.5)) drop-shadow(0 0 50px ${card.glowColor}35)`
+                        : "drop-shadow(0 8px 20px rgba(0,0,0,0.8)) grayscale(1) brightness(0.02)",
+                    }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                  >
+                    <Image
+                      src={badgeImages[card.id] || card.image}
+                      alt={card.name}
+                      width={500}
+                      height={500}
+                      className="w-full h-auto object-contain"
+                    />
+                    {/* Shine streak on badge when unlocked */}
+                    {isUnlocked && badgeImages[card.id] && (
+                      <div
+                        className="absolute inset-0 pointer-events-none"
+                        style={{
+                          WebkitMaskImage: `url(${badgeImages[card.id]})`,
+                          WebkitMaskSize: "contain",
+                          WebkitMaskRepeat: "no-repeat",
+                          WebkitMaskPosition: "center",
+                          maskImage: `url(${badgeImages[card.id]})`,
+                          maskSize: "contain",
+                          maskRepeat: "no-repeat",
+                          maskPosition: "center",
+                        }}
+                      >
+                        <div
+                          className="absolute top-[-20%] bottom-[-20%] badge-shine-streak"
+                          style={{
+                            width: "25%",
+                            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12) 20%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.12) 80%, transparent)",
+                            transform: "skewX(-15deg)",
+                          }}
+                        />
+                      </div>
+                    )}
+
+                  </motion.div>
+                  {/* Lock overlay — outside filtered container so it stays visible */}
+                  {!isUnlocked && (
+                    <motion.div
+                      className="absolute inset-0 flex flex-col items-center justify-center z-20"
+                      initial={false}
+                      animate={{
+                        opacity: status === "success" && data?.qualified ? 0 : 1,
+                      }}
+                      transition={{ duration: 0.8 }}
+                    >
+                      <div
+                        className="w-24 h-24 rounded-2xl flex items-center justify-center mb-4"
+                        style={{
+                          background: "rgba(0,0,0,0.7)",
+                          backdropFilter: "blur(16px)",
+                          WebkitBackdropFilter: "blur(16px)",
+                        }}
+                      >
+                        <Lock className="w-10 h-10 text-orange-400 drop-shadow-[0_0_12px_rgba(249,115,22,0.8)]" />
+                      </div>
+                      <p className="font-display text-lg tracking-tight mb-1 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                        ZK Proof Required
+                      </p>
+                      <span className="text-xs text-white/80 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+                        Click <span className="text-orange-400 font-semibold drop-shadow-[0_0_8px_rgba(249,115,22,0.5)]">Run</span> to verify
+                      </span>
+                    </motion.div>
+                  )}
+                  </div>
+                </div>
 
                 {/* Glare effect on hover */}
                 <div
-                  className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+                  className="absolute inset-0 pointer-events-none transition-opacity duration-300 z-10"
                   style={{
                     opacity: isHovered ? 0.15 : 0,
                     background:
@@ -726,44 +833,10 @@ export default function CardDetailPage() {
                   }}
                 />
 
-                {/* Lock overlay when not unlocked */}
-                {!isUnlocked && (
-                  <motion.div
-                    className="absolute inset-0 flex items-center justify-center"
-                    initial={false}
-                    animate={{
-                      opacity: status === "success" && data?.qualified ? 0 : 1,
-                    }}
-                    transition={{ duration: 0.8 }}
-                    style={{
-                      background:
-                        "radial-gradient(ellipse at center, rgba(6,6,17,0.7) 0%, rgba(6,6,17,0.4) 100%)",
-                    }}
-                  >
-                    <div className="flex flex-col items-center gap-3">
-                      <div
-                        className="w-20 h-20 rounded-2xl glass flex items-center justify-center"
-                        style={{
-                          border: `1px solid ${card.glowColor}30`,
-                          boxShadow: `0 0 30px ${card.glowColor}15`,
-                        }}
-                      >
-                        <Lock
-                          className="w-9 h-9"
-                          style={{ color: card.glowColor }}
-                        />
-                      </div>
-                      <span className="text-sm text-zinc-500 font-medium">
-                        ZK Proof Required
-                      </span>
-                    </div>
-                  </motion.div>
-                )}
-
                 {/* Unlocked shimmer sweep */}
                 {isUnlocked && (
                   <motion.div
-                    className="absolute inset-0 pointer-events-none"
+                    className="absolute inset-0 pointer-events-none z-10"
                     initial={{ x: "-100%" }}
                     animate={{ x: "200%" }}
                     transition={{
@@ -777,6 +850,11 @@ export default function CardDetailPage() {
                   />
                 )}
               </div>
+
+              {/* Mobile card name — shown below badge on small screens */}
+              <h2 className="lg:hidden font-display text-2xl text-white tracking-tight mt-5 text-center">
+                {card.name}
+              </h2>
 
               {/* Celebration sparkle burst on unlock */}
               <AnimatePresence>
@@ -797,10 +875,10 @@ export default function CardDetailPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="flex flex-col items-end text-right"
+              className="flex flex-col items-start text-left lg:items-end lg:text-right"
             >
               {/* Tier + Chain pills */}
-              <div className="flex items-center gap-2.5 flex-wrap justify-end">
+              <div className="flex items-center gap-2.5 flex-wrap justify-start lg:justify-end">
                 <span
                   className="text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full"
                   style={{
@@ -825,8 +903,8 @@ export default function CardDetailPage() {
                 </span>
               </div>
 
-              {/* Title */}
-              <h1 className="font-display text-4xl sm:text-5xl text-white tracking-tight leading-tight mt-5">
+              {/* Title — hidden on mobile (shown below badge instead) */}
+              <h1 className="hidden lg:block font-display text-4xl sm:text-5xl text-white tracking-tight leading-tight mt-5">
                 {card.name}
               </h1>
 
@@ -837,7 +915,7 @@ export default function CardDetailPage() {
 
               {/* ─── Requirement glass card ─── */}
               <div
-                className="w-full rounded-2xl p-7 text-right mt-8"
+                className="w-full rounded-2xl p-5 sm:p-7 text-left lg:text-right mt-6 lg:mt-8"
                 style={{
                   background:
                     "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.015) 100%)",
@@ -847,7 +925,7 @@ export default function CardDetailPage() {
                   WebkitBackdropFilter: "blur(20px)",
                 }}
               >
-                <div className="flex items-center gap-2.5 justify-end mb-4">
+                <div className="flex items-center gap-2.5 justify-start lg:justify-end mb-4">
                   <span
                     className="text-[11px] font-bold uppercase tracking-[0.2em]"
                     style={{ color: card.glowColor }}
@@ -873,26 +951,50 @@ export default function CardDetailPage() {
               </div>
 
               {/* Stats row */}
-              <div className="flex items-center gap-4 flex-wrap justify-end mt-6">
-                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass">
-                  <Trophy className="w-4 h-4 text-amber-400" />
-                  <span className="text-white font-semibold text-sm">
+              <div className="flex items-center gap-4 flex-wrap justify-start lg:justify-end mt-6">
+                <div
+                  className="relative flex items-center gap-2.5 px-5 py-3 rounded-full"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(251,191,36,0.15) 0%, rgba(245,158,11,0.08) 100%)",
+                    border: "1px solid rgba(251,191,36,0.3)",
+                    boxShadow: "0 0 20px rgba(251,191,36,0.2), 0 0 60px rgba(251,191,36,0.1), 0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
+                    backdropFilter: "blur(16px)",
+                    WebkitBackdropFilter: "blur(16px)",
+                  }}
+                >
+                  {/* Bright glow underneath */}
+                  <div
+                    className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[80%] h-4 rounded-full pointer-events-none"
+                    style={{
+                      background: "radial-gradient(ellipse at center, rgba(251,191,36,0.5) 0%, rgba(245,158,11,0.2) 40%, transparent 70%)",
+                      filter: "blur(8px)",
+                    }}
+                  />
+                  <Trophy className="w-4 h-4 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" />
+                  <span className="text-white font-bold text-sm drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">
                     {card.points}
                   </span>
-                  <span className="text-zinc-500 text-sm">pts</span>
+                  <span className="text-amber-300/70 text-sm font-medium">pts</span>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass">
-                  <Shield className="w-4 h-4 text-accent-orange" />
-                  <span className="text-zinc-300 text-sm">Proof of SQL</span>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass">
-                  <LinkIcon className="w-4 h-4 text-blue-400" />
-                  <span className="text-zinc-300 text-sm">SXT Chain</span>
-                </div>
+                <a
+                  href="https://docs.spaceandtime.io"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.05] transition-colors"
+                >
+                  <span className="text-xs text-zinc-500">Powered by</span>
+                  <Image
+                    src="/logos/sxt.svg"
+                    alt="Space and Time"
+                    width={80}
+                    height={20}
+                    className="h-4 w-auto object-contain opacity-50 hover:opacity-70 transition-opacity"
+                  />
+                </a>
               </div>
 
               {/* ─── Run button / Status ─── */}
-              <div className="flex flex-col gap-4 mt-6 mb-8 w-full items-end">
+              <div className="flex flex-col gap-4 mt-6 mb-8 w-full items-stretch lg:items-end">
                 {!isConnected ? (
                   <div className="flex items-center gap-3 px-5 py-4 rounded-xl glass">
                     <Shield className="w-5 h-5 text-zinc-500" />
@@ -976,7 +1078,7 @@ export default function CardDetailPage() {
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 }}
-                      className="flex items-center gap-3 px-4 py-2.5 rounded-xl glass w-full justify-end"
+                      className="flex items-center gap-3 px-4 py-2.5 rounded-xl glass w-full justify-start lg:justify-end"
                     >
                       <Wallet className="w-4 h-4 text-zinc-500" />
                       <span className="text-zinc-500 text-xs">SXT Balance:</span>
@@ -1113,7 +1215,7 @@ export default function CardDetailPage() {
               </div>
 
               {/* ZK verification explainer */}
-              <div className="w-full flex justify-end">
+              <div className="w-full flex justify-start lg:justify-end">
                 <p className="text-zinc-500 text-sm leading-relaxed max-w-lg">
                   Every badge is verified using zero-knowledge proven data
                   powered by{" "}
@@ -1127,51 +1229,156 @@ export default function CardDetailPage() {
                 </p>
               </div>
 
-              {/* Verification details (shown after any result) */}
+              {/* ─── NFT Metadata Traits (shown after successful run) ─── */}
               {status === "success" && data && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="rounded-xl p-5 glass-strong"
-                  style={{ border: "1px solid rgba(255,255,255,0.04)" }}
+                  transition={{ delay: 0.25, duration: 0.5 }}
+                  className="w-full mt-2"
                 >
-                  <p className="text-xs text-zinc-500 uppercase tracking-wider mb-3 font-medium">
-                    Verification Details
-                  </p>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <span className="text-zinc-500 text-xs">Status</span>
-                      <p className="text-white font-medium mt-0.5">
-                        {data.verified ? "Verified" : "Unverified"}
-                      </p>
-                    </div>
-                    <div>
-                      <span className="text-zinc-500 text-xs">Qualified</span>
-                      <p
-                        className="font-medium mt-0.5"
-                        style={{
-                          color: data.qualified ? "#4ade80" : "#ef4444",
-                        }}
-                      >
-                        {data.qualified ? "Yes" : "No"}
-                      </p>
-                    </div>
-                    <div>
-                      <span className="text-zinc-500 text-xs">
-                        Commitment Scheme
+                  <div
+                    className="rounded-2xl overflow-hidden"
+                    style={{
+                      background: "rgba(255,255,255,0.02)",
+                      border: "1px solid rgba(255,255,255,0.06)",
+                    }}
+                  >
+                    {/* Header */}
+                    <div
+                      className="flex items-center justify-between px-5 py-4"
+                      style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Layers className="w-4 h-4 text-zinc-400" />
+                        <span className="text-sm font-semibold text-white">Traits</span>
+                      </div>
+                      <span className="text-xs text-zinc-500 font-mono">
+                        TRAITS <span className="text-zinc-400">9</span>
                       </span>
-                      <p className="text-white font-medium mt-0.5">
-                        HyperKZG
-                      </p>
                     </div>
-                    <div>
-                      <span className="text-zinc-500 text-xs">
-                        Proof Engine
-                      </span>
-                      <p className="text-white font-medium mt-0.5">
-                        Proof of SQL
-                      </p>
+
+                    {/* Traits grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px" style={{ background: "rgba(255,255,255,0.04)" }}>
+                      {/* Rarity */}
+                      <div className="px-4 py-4" style={{ background: "rgba(6,6,17,0.9)" }}>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Rarity</p>
+                        <p className="text-sm font-semibold text-white mb-2.5">{card.tier}</p>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="text-xs font-bold px-2 py-0.5 rounded"
+                            style={{ background: `${tierColor}20`, color: tierColor }}
+                          >
+                            {card.tier === "Legendary" ? "0.5%" : card.tier === "Veteran" ? "2%" : card.tier === "Hard" ? "8%" : card.tier === "Intermediate" ? "18%" : "35%"}
+                          </span>
+                          <span className="text-[10px] text-zinc-500 font-medium">of holders</span>
+                        </div>
+                      </div>
+
+                      {/* Total Minted */}
+                      <div className="px-4 py-4" style={{ background: "rgba(6,6,17,0.9)" }}>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Total Minted</p>
+                        <p className="text-sm font-semibold text-white mb-2.5">
+                          {card.tier === "Legendary" ? "12" : card.tier === "Veteran" ? "47" : card.tier === "Hard" ? "183" : card.tier === "Intermediate" ? "412" : "1,847"}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ background: "rgba(96,165,250,0.15)", color: "#60a5fa" }}>
+                            {card.tier === "Legendary" ? "12" : card.tier === "Veteran" ? "47" : card.tier === "Hard" ? "183" : card.tier === "Intermediate" ? "412" : "1,847"}
+                          </span>
+                          <span className="text-[10px] text-zinc-500 font-medium">badges</span>
+                        </div>
+                      </div>
+
+                      {/* Mint Number */}
+                      <div className="px-4 py-4" style={{ background: "rgba(6,6,17,0.9)" }}>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Mint Number</p>
+                        <p className="text-sm font-semibold text-white mb-2.5">
+                          #{checkData?.tokenId ?? (mintData?.tokenId ?? "—")}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ background: "rgba(74,222,128,0.15)", color: "#4ade80" }}>
+                            {checkData?.tokenId || mintData?.tokenId ? "Minted" : "Pending"}
+                          </span>
+                          <span className="text-[10px] text-zinc-500 font-medium">on Base</span>
+                        </div>
+                      </div>
+
+                      {/* SXT Spent */}
+                      <div className="px-4 py-4" style={{ background: "rgba(6,6,17,0.9)" }}>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">SXT Spent</p>
+                        <p className="text-sm font-semibold text-white mb-2.5">~23 SXT</p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ background: "rgba(251,191,36,0.15)", color: "#fbbf24" }}>
+                            23
+                          </span>
+                          <span className="text-[10px] text-zinc-500 font-medium">SXT consumed</span>
+                        </div>
+                      </div>
+
+                      {/* Query Result */}
+                      <div className="px-4 py-4" style={{ background: "rgba(6,6,17,0.9)" }}>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Query Result</p>
+                        <p className="text-sm font-semibold text-white mb-2.5">{data.qualified ? "Qualified" : "Not Qualified"}</p>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="text-xs font-bold px-2 py-0.5 rounded"
+                            style={{
+                              background: data.qualified ? "rgba(74,222,128,0.15)" : "rgba(239,68,68,0.15)",
+                              color: data.qualified ? "#4ade80" : "#ef4444",
+                            }}
+                          >
+                            {data.verified ? "Verified" : "Unverified"}
+                          </span>
+                          <span className="text-[10px] text-zinc-500 font-medium">by SXT</span>
+                        </div>
+                      </div>
+
+                      {/* ZK Proof */}
+                      <div className="px-4 py-4" style={{ background: "rgba(6,6,17,0.9)" }}>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">ZK Proof</p>
+                        <p className="text-sm font-semibold text-white mb-2.5">HyperKZG</p>
+                        <div className="flex items-center gap-2">
+                          <Fingerprint className="w-3.5 h-3.5 text-purple-400" />
+                          <span className="text-[10px] text-zinc-500 font-medium">Proof of SQL</span>
+                        </div>
+                      </div>
+
+                      {/* Chain */}
+                      <div className="px-4 py-4" style={{ background: "rgba(6,6,17,0.9)" }}>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Chain</p>
+                        <p className="text-sm font-semibold text-white mb-2.5">{card.chain}</p>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="text-xs font-bold px-2 py-0.5 rounded"
+                            style={{ background: `${chainColor}15`, color: chainColor }}
+                          >
+                            {card.chain}
+                          </span>
+                          <span className="text-[10px] text-zinc-500 font-medium">network</span>
+                        </div>
+                      </div>
+
+                      {/* Category */}
+                      <div className="px-4 py-4" style={{ background: "rgba(6,6,17,0.9)" }}>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Category</p>
+                        <p className="text-sm font-semibold text-white mb-2.5">{card.category}</p>
+                        <div className="flex items-center gap-2">
+                          <Database className="w-3.5 h-3.5 text-amber-400" />
+                          <span className="text-[10px] text-zinc-500 font-medium">{card.category} badge</span>
+                        </div>
+                      </div>
+
+                      {/* Points */}
+                      <div className="px-4 py-4" style={{ background: "rgba(6,6,17,0.9)" }}>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Points</p>
+                        <p className="text-sm font-semibold text-white mb-2.5">{card.points} pts</p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ background: "rgba(249,115,22,0.15)", color: "#f97316" }}>
+                            +{card.points}
+                          </span>
+                          <span className="text-[10px] text-zinc-500 font-medium">earned</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -1209,27 +1416,37 @@ export default function CardDetailPage() {
                       }}
                     />
                     <div className="relative overflow-hidden rounded-xl border border-white/[0.06] group-hover:border-white/[0.12] transition-colors">
+                      {/* Blurry card backdrop */}
                       <Image
                         src={rc.image}
-                        alt={rc.name}
+                        alt=""
                         width={200}
                         height={280}
                         className="w-full h-auto"
-                        style={{
-                          filter: "grayscale(0.5) brightness(0.6)",
-                          transition: "filter 0.3s ease",
-                        }}
-                        onMouseOver={(e) =>
-                          ((e.target as HTMLImageElement).style.filter =
-                            "grayscale(0.2) brightness(0.8)")
-                        }
-                        onMouseOut={(e) =>
-                          ((e.target as HTMLImageElement).style.filter =
-                            "grayscale(0.5) brightness(0.6)")
-                        }
+                        style={{ filter: "blur(6px) brightness(0.25)" }}
                       />
+                      <div className="absolute inset-0 bg-[#060611]/40" />
+
+                      {/* Badge overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center p-4 z-10">
+                        <div
+                          className="relative w-[85%]"
+                          style={{
+                            filter: `drop-shadow(0 6px 16px rgba(0,0,0,0.6)) drop-shadow(0 0 12px ${rc.glowColor}25)`,
+                          }}
+                        >
+                          <Image
+                            src={badgeImages[rc.id] || rc.image}
+                            alt={rc.name}
+                            width={200}
+                            height={200}
+                            className="w-full h-auto object-contain"
+                          />
+                        </div>
+                      </div>
+
                       {/* Bottom label */}
-                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 pt-8">
+                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-3 pt-8 z-20">
                         <p className="text-white text-xs font-semibold truncate">
                           {rc.name}
                         </p>

@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAccount } from "wagmi";
-import { usePrivy } from "@privy-io/react-auth";
+import { usePrivy, useLogin } from "@privy-io/react-auth";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, TrendingUp, Flame, Crown, Clock, Users, Star, Shield, Sparkles, ExternalLink, Zap, ChevronUp, CalendarCheck, Activity, Copy, Check, Gift } from "lucide-react";
+import { ArrowRight, TrendingUp, Flame, Crown, Clock, Users, Star, Shield, Sparkles, ExternalLink, Zap, ChevronUp, CalendarCheck, Activity, Copy, Check, Gift, LogIn, Wallet } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import DashboardLayout from "@/components/layout/DashboardLayout";
@@ -167,10 +167,10 @@ const trendingCards = [
 
 /* ─── Popular badges row (4 cards) ─── */
 const popularBadges = [
-  { id: "etherean", name: "The Etherean", image: "/cards/etherean (2).png", badge: "/badges/opensea_badge.png", tier: "T2", color: "#60a5fa", description: "Hold at least one ETH.", chain: "Ethereum" },
-  { id: "multichain", name: "Multichain Maximalist", image: "/cards/multi-chain.png", badge: "/badges/25.png", tier: "T3", color: "#60a5fa", description: "Used 5 different blockchains.", chain: "Multi" },
-  { id: "opensea", name: "Opensea VIP", image: "/cards/opensea (2).png", badge: "/badges/4.png", tier: "T3", color: "#22d3ee", description: "Bought an NFT before 2021.", chain: "Ethereum" },
-  { id: "art-blocks", name: "Fine Art Collector", image: "/cards/art_blocks.png", badge: "/badges/21.png", tier: "T3", color: "#4ade80", description: "Hold 3 or more Art Blocks items.", chain: "Ethereum" },
+  { id: "etherean", name: "The Etherean", image: "/cards/etherean (2).png", badge: "/badges/etheran.png", tier: "T2", color: "#60a5fa", description: "Hold at least one ETH.", chain: "Ethereum" },
+  { id: "multichain", name: "Multichain Maximalist", image: "/cards/multi-chain.png", badge: "/badges/multichain_madness.png", tier: "T3", color: "#60a5fa", description: "Used 5 different blockchains.", chain: "Multi" },
+  { id: "opensea", name: "Opensea VIP", image: "/cards/opensea (2).png", badge: "/badges/opensea_badge.png", tier: "T3", color: "#22d3ee", description: "Bought an NFT before 2021.", chain: "Ethereum" },
+  { id: "art-blocks", name: "Fine Art Collector", image: "/cards/art_blocks.png", badge: "/badges/art_collector.png", tier: "T3", color: "#4ade80", description: "Hold 3 or more Art Blocks items.", chain: "Ethereum" },
 ];
 
 /* ─── Recent activity feed data ─── */
@@ -188,6 +188,28 @@ const recentActivity = [
   { badge: "Multichain Max", image: "/cards/multi-chain.png", wallet: "0x5aG2...8hB4", username: "bridgelord", time: "14h", tier: "T3" },
   { badge: "The Validator", image: "/cards/eth_steak.png", wallet: "0x8kL9...2mN6", username: "stakoor.eth", time: "16h", tier: "T2" },
 ];
+
+/* ─── Card image → Badge image map ─── */
+const cardToBadge: Record<string, string> = {
+  "/cards/whale_activity.png": "/badges/whale_activity.png",
+  "/cards/diamond_hands.png": "/badges/diamond_hands.png",
+  "/cards/gas_guzzler.png": "/badges/gas_guzzler.png",
+  "/cards/base_bull.png": "/badges/base_bull.png",
+  "/cards/memecoin.png": "/badges/memecoiner.png",
+  "/cards/8.png": "/badges/sandwichd.png",
+  "/cards/9.png": "/badges/data_wrangler.png",
+  "/cards/10.png": "/badges/bullseye.png",
+  "/cards/11.png": "/badges/squiggler.png",
+  "/cards/nft_flipper (2).png": "/badges/nft_flipper.png",
+  "/cards/eth_steak.png": "/badges/validator.png",
+  "/cards/art_blocks.png": "/badges/art_collector.png",
+  "/cards/etherean (2).png": "/badges/etheran.png",
+  "/cards/multi-chain.png": "/badges/multichain_madness.png",
+  "/cards/opensea (2).png": "/badges/opensea_badge.png",
+  "/cards/nft_20k.png": "/badges/nft_upper_class.png",
+  "/cards/emn_rug.png": "/badges/rug_victi.png",
+  "/cards/base_builder.png": "/badges/base_builder.png",
+};
 
 function truncateAddress(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
@@ -704,14 +726,14 @@ function RightSidebar() {
           <div className="absolute inset-0 rounded-2xl shimmer opacity-25 pointer-events-none" />
 
           <div className="relative z-10 flex items-center gap-4 p-3">
-            {/* Card fills the section height */}
-            <div className="flex-shrink-0 card-3d">
+            {/* Badge image */}
+            <div className="flex-shrink-0">
               <Image
-                src="/cards/8.png"
+                src="/badges/sandwichd.png"
                 alt="Sandwich'd"
-                width={120}
-                height={168}
-                className="w-[100px] h-auto rounded-lg"
+                width={80}
+                height={80}
+                className="w-[70px] h-auto object-contain"
                 style={{
                   filter: "drop-shadow(0 6px 20px rgba(0,0,0,0.5))",
                 }}
@@ -721,7 +743,7 @@ function RightSidebar() {
             {/* Text */}
             <div className="flex-1 min-w-0 py-1">
               <h3 className="font-display text-base text-white tracking-tight mb-1">
-                New cards weekly
+                New badges weekly
               </h3>
               <p className="text-[11px] text-zinc-400 leading-relaxed mb-2">
                 Fresh badges every week.
@@ -745,19 +767,39 @@ function RightSidebar() {
           </div>
 
           <div className="space-y-3">
-            {recentActivity.map((item, i) => (
+            {recentActivity.map((item, i) => {
+              const badgeImg = cardToBadge[item.image];
+              const t = tierConfig[item.tier] ?? tierConfig.T1;
+              return (
               <div
                 key={i}
                 className="flex items-center gap-3 p-2 rounded-xl hover:bg-white/[0.03] transition-colors"
               >
-                <div className="w-10 h-14 flex-shrink-0 rounded-lg overflow-hidden">
-                  <Image
-                    src={item.image}
-                    alt={item.badge}
-                    width={40}
-                    height={56}
-                    className="w-full h-full object-cover"
-                  />
+                <div
+                  className="w-10 h-10 flex-shrink-0 rounded-xl flex items-center justify-center overflow-hidden"
+                  style={{
+                    background: `linear-gradient(135deg, ${t.bg}, rgba(255,255,255,0.03))`,
+                    border: `1px solid ${t.border}`,
+                  }}
+                >
+                  {badgeImg ? (
+                    <Image
+                      src={badgeImg}
+                      alt={item.badge}
+                      width={36}
+                      height={36}
+                      className="w-8 h-8 object-contain"
+                      style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }}
+                    />
+                  ) : (
+                    <Image
+                      src={item.image}
+                      alt={item.badge}
+                      width={40}
+                      height={40}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-white truncate">{item.badge}</p>
@@ -772,7 +814,8 @@ function RightSidebar() {
                   <span className="text-[9px] text-zinc-700">{item.time}</span>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           <Link
@@ -790,60 +833,165 @@ function RightSidebar() {
 
 function FeaturedBadgeDisplay() {
   return (
-    <div className="flex-shrink-0 flex items-center justify-center">
+    <div className="flex-shrink-0 flex items-center justify-center" style={{ perspective: "1000px" }}>
       <div className="relative">
         {/* Ambient glow behind badge */}
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full blur-3xl pointer-events-none"
           style={{ background: "rgba(249, 115, 22, 0.12)" }}
         />
-        <div
+        <motion.div
           className="relative w-[220px] sm:w-[280px] lg:w-[380px] cursor-pointer"
           style={{
+            transformStyle: "preserve-3d",
             filter: "drop-shadow(0 16px 40px rgba(0,0,0,0.5)) drop-shadow(0 0 30px rgba(249,115,22,0.15))",
-            animation: "badge-float 3s ease-in-out infinite",
+          }}
+          animate={{
+            rotateY: [0, 22, 0, -22, 0],
+          }}
+          transition={{
+            rotateY: {
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+            },
           }}
         >
-          <Image
-            src="/badges/17.png"
-            alt="Sandwich'd"
-            width={380}
-            height={380}
-            className="w-full h-auto object-contain"
-            priority
-          />
-          {/* Shine streak clipped to badge silhouette */}
+          {/* Front face */}
+          <div style={{ backfaceVisibility: "hidden" }}>
+            <Image
+              src="/badges/17.png"
+              alt="Sandwich'd"
+              width={380}
+              height={380}
+              className="w-full h-auto object-contain"
+              priority
+            />
+            {/* Shine streak clipped to badge silhouette */}
+            <div
+              className="absolute inset-0 pointer-events-none overflow-hidden"
+              style={{
+                WebkitMaskImage: "url(/badges/17.png)",
+                WebkitMaskSize: "contain",
+                WebkitMaskRepeat: "no-repeat",
+                WebkitMaskPosition: "center",
+                maskImage: "url(/badges/17.png)",
+                maskSize: "contain",
+                maskRepeat: "no-repeat",
+                maskPosition: "center",
+                backfaceVisibility: "hidden",
+              }}
+            >
+              {/* Thin moving streak */}
+              <div
+                className="absolute top-[-20%] bottom-[-20%] badge-shine-streak"
+                style={{
+                  width: "25%",
+                  background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12) 20%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.12) 80%, transparent)",
+                  transform: "skewX(-15deg)",
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Back face — dark metallic back of badge */}
           <div
-            className="absolute inset-0 pointer-events-none overflow-hidden"
+            className="absolute inset-0 flex items-center justify-center"
             style={{
-              WebkitMaskImage: "url(/badges/17.png)",
-              WebkitMaskSize: "contain",
-              WebkitMaskRepeat: "no-repeat",
-              WebkitMaskPosition: "center",
-              maskImage: "url(/badges/17.png)",
-              maskSize: "contain",
-              maskRepeat: "no-repeat",
-              maskPosition: "center",
+              backfaceVisibility: "hidden",
+              transform: "rotateY(180deg)",
             }}
           >
-            {/* Thin moving streak */}
             <div
-              className="absolute top-[-20%] bottom-[-20%] badge-shine-streak"
+              className="w-[85%] h-[85%] rounded-full"
               style={{
-                width: "25%",
-                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12) 20%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.12) 80%, transparent)",
-                transform: "skewX(-15deg)",
+                background: "radial-gradient(ellipse at 35% 35%, #2a2a4a 0%, #151528 40%, #0a0a18 70%, #060612 100%)",
+                boxShadow: "inset 0 2px 8px rgba(255,255,255,0.08), inset 0 -4px 12px rgba(0,0,0,0.6), 0 0 30px rgba(249,115,22,0.08)",
+                border: "2px solid rgba(255,255,255,0.06)",
               }}
-            />
+            >
+              {/* Inner ring detail */}
+              <div
+                className="w-full h-full rounded-full flex items-center justify-center"
+                style={{
+                  background: "radial-gradient(circle at 40% 40%, transparent 50%, rgba(255,255,255,0.03) 52%, transparent 54%)",
+                }}
+              >
+                <div
+                  className="w-[60%] h-[60%] rounded-full"
+                  style={{
+                    background: "radial-gradient(ellipse at 40% 35%, #1e1e38 0%, #0d0d1a 60%)",
+                    border: "1px solid rgba(255,255,255,0.04)",
+                    boxShadow: "inset 0 1px 4px rgba(255,255,255,0.05), inset 0 -2px 6px rgba(0,0,0,0.4)",
+                  }}
+                />
+              </div>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
 }
 
+function SignInPrompt({ compact = false }: { compact?: boolean }) {
+  const { login } = useLogin();
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.25 }}
+      className={compact ? "mt-6" : "hidden xl:block w-[300px] flex-shrink-0 mt-4"}
+    >
+      <div
+        className="relative rounded-2xl overflow-hidden"
+        style={{
+          background: "rgba(12, 12, 30, 0.6)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          border: "1px solid rgba(255, 255, 255, 0.06)",
+        }}
+      >
+        <div className="absolute -top-16 -right-16 w-[250px] h-[250px] bg-orange-500/[0.04] rounded-full blur-3xl pointer-events-none" />
+        <div className="relative z-10 px-6 py-8 flex flex-col items-center text-center">
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
+            style={{
+              background: "linear-gradient(135deg, rgba(249,115,22,0.15), rgba(245,158,11,0.1))",
+              border: "1px solid rgba(249,115,22,0.2)",
+            }}
+          >
+            <Wallet className="w-6 h-6 text-orange-400" />
+          </div>
+          <h3
+            className="font-display text-lg mb-2"
+            style={{
+              background: "linear-gradient(135deg, #ffffff 0%, #fdba74 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            Connect to get started
+          </h3>
+          <p className="text-xs text-zinc-500 mb-5 leading-relaxed max-w-[220px]">
+            Sign in to track your XP, view your profile, and start earning badges.
+          </p>
+          <button
+            onClick={login}
+            className="w-full flex items-center justify-center gap-2 px-5 py-3 text-sm font-bold rounded-xl bg-gradient-to-r from-accent-orange to-accent-amber text-white hover:shadow-lg hover:shadow-accent-orange/25 transition-all"
+          >
+            <LogIn className="w-4 h-4" />
+            Sign In
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function DashboardPage() {
-  const { isConnected } = useAccount();
+  const { authenticated } = usePrivy();
 
   return (
     <DashboardLayout>
@@ -908,17 +1056,33 @@ export default function DashboardPage() {
                     {[...heroCarouselCards, ...heroCarouselCards].map((card, i) => (
                       <motion.div
                         key={`hero-card-${i}`}
-                        className="flex-shrink-0 card-3d"
+                        className="flex-shrink-0 relative w-[170px] sm:w-[190px] rounded-xl overflow-hidden"
                         whileHover={{ scale: 1.05, y: -6 }}
                         transition={{ type: "spring", stiffness: 300 }}
                       >
+                        {/* Blurry card backdrop */}
                         <Image
                           src={card.src}
-                          alt={card.alt}
+                          alt=""
                           width={200}
                           height={280}
-                          className="w-[170px] sm:w-[190px] h-auto object-cover rounded-xl"
+                          className="w-full h-auto object-cover"
+                          style={{ filter: "blur(6px) brightness(0.25)" }}
                         />
+                        <div className="absolute inset-0 bg-[#060611]/40" />
+                        {/* Badge overlay */}
+                        {cardToBadge[card.src] && (
+                          <div className="absolute inset-0 flex items-center justify-center p-3 z-10">
+                            <Image
+                              src={cardToBadge[card.src]}
+                              alt={card.alt}
+                              width={180}
+                              height={180}
+                              className="w-[90%] h-auto object-contain"
+                              style={{ filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.6))" }}
+                            />
+                          </div>
+                        )}
                       </motion.div>
                     ))}
                   </div>
@@ -927,8 +1091,12 @@ export default function DashboardPage() {
             </div>
           </motion.div>
 
-          {/* ─── XP Tracker (signed-in only, hidden on xl where sidebar shows it) ─── */}
-          {isConnected && <div className="xl:hidden"><XPTracker /></div>}
+          {/* ─── XP Tracker (signed-in) / Sign-in prompt (not signed-in) — hidden on xl where sidebar shows it ─── */}
+          {authenticated ? (
+            <div className="xl:hidden"><XPTracker /></div>
+          ) : (
+            <div className="xl:hidden"><SignInPrompt compact /></div>
+          )}
 
           {/* ─── Trending Achievements ─── */}
           <motion.div
@@ -975,7 +1143,7 @@ export default function DashboardPage() {
                         border: "1px solid rgba(255,255,255,0.06)",
                       }}
                     >
-                      {/* Card thumbnail */}
+                      {/* Card thumbnail with badge */}
                       <div className="relative w-[72px] flex-shrink-0">
                         <div
                           className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -m-1"
@@ -984,14 +1152,28 @@ export default function DashboardPage() {
                             filter: "blur(8px)",
                           }}
                         />
-                        <div className="card-3d relative">
+                        <div className="relative rounded-lg overflow-hidden">
                           <Image
                             src={card.image}
-                            alt={card.name}
+                            alt=""
                             width={72}
                             height={100}
-                            className="w-full h-auto rounded-lg"
+                            className="w-full h-auto"
+                            style={{ filter: "blur(4px) brightness(0.25)" }}
                           />
+                          <div className="absolute inset-0 bg-[#060611]/40" />
+                          {cardToBadge[card.image] && (
+                            <div className="absolute inset-0 flex items-center justify-center p-1.5 z-10">
+                              <Image
+                                src={cardToBadge[card.image]}
+                                alt={card.name}
+                                width={72}
+                                height={72}
+                                className="w-[90%] h-auto object-contain"
+                                style={{ filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.5))" }}
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -1176,97 +1358,124 @@ export default function DashboardPage() {
               </Link>
             </div>
 
-            {/* Badge row — card backdrop + badge overlay */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {/* Badge row — 3D spin style */}
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {popularBadges.map((badge) => (
                 <Link
                   key={badge.id}
                   href={`/achievements/card/${badge.id}`}
                   className="group"
                 >
-                  {/* Card with badge overlay */}
                   <div
-                    className="relative rounded-2xl overflow-hidden cursor-pointer group-hover:-translate-y-1 transition-transform duration-300"
+                    className="relative rounded-2xl overflow-hidden px-4 pt-4 pb-4 flex flex-col items-center text-center cursor-pointer group-hover:-translate-y-1 transition-transform duration-300"
                     style={{
-                      background: "#060611",
+                      background: "linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.008) 100%)",
                       border: "1px solid rgba(255,255,255,0.06)",
+                      boxShadow: `0 4px 24px rgba(0,0,0,0.3), 0 0 40px ${badge.color}05`,
                     }}
                   >
-                    {/* Full card visible behind */}
-                    <div className="relative">
+                    {/* Card art background — slightly higher opacity */}
+                    <div className="absolute inset-0 pointer-events-none z-0">
                       <Image
                         src={badge.image}
                         alt=""
-                        width={200}
-                        height={280}
-                        className="w-full h-auto rounded-lg"
+                        width={400}
+                        height={560}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        style={{ filter: "blur(12px) brightness(0.35) saturate(0.7)" }}
                       />
-                      <div className="absolute inset-0 bg-[#060611]/70 rounded-lg" />
+                      <div
+                        className="absolute inset-0"
+                        style={{ background: "radial-gradient(ellipse at center, transparent 20%, #060611 75%)" }}
+                      />
+                      <div
+                        className="absolute inset-0"
+                        style={{ background: "linear-gradient(to bottom, transparent 30%, #060611 85%)" }}
+                      />
                     </div>
 
                     {/* Hover glow */}
                     <div
-                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-[1]"
                       style={{
                         background: `radial-gradient(ellipse at center, ${badge.color}15 0%, transparent 70%)`,
                       }}
                     />
 
-                    {/* Badge icon floating on top */}
-                    <div className="absolute inset-0 flex items-center justify-center z-10 p-3">
-                      <div
-                        className="relative w-[95%] overflow-hidden"
-                        style={{
-                          filter: `drop-shadow(0 8px 24px rgba(0,0,0,0.5)) drop-shadow(0 0 20px ${badge.color}20)`,
-                          animation: "badge-float 3s ease-in-out infinite",
-                        }}
-                      >
-                        <Image
-                          src={badge.badge}
-                          alt={badge.name}
-                          width={200}
-                          height={200}
-                          className="w-full h-auto object-contain"
-                        />
-                        {/* Shine streak */}
-                        <div
-                          className="absolute inset-0 pointer-events-none overflow-hidden"
-                          style={{
-                            WebkitMaskImage: `url(${badge.badge})`,
-                            WebkitMaskSize: "contain",
-                            WebkitMaskRepeat: "no-repeat",
-                            WebkitMaskPosition: "center",
-                            maskImage: `url(${badge.badge})`,
-                            maskSize: "contain",
-                            maskRepeat: "no-repeat",
-                            maskPosition: "center",
-                          }}
-                        >
+                    {/* Badge 3D spin */}
+                    <div
+                      className="relative w-[82%] mb-2 z-10"
+                      style={{
+                        filter: `drop-shadow(0 16px 32px rgba(0,0,0,0.7)) drop-shadow(0 6px 16px ${badge.color}30)`,
+                        perspective: "800px",
+                      }}
+                    >
+                      <div className="badge-3d-spin relative">
+                        <div className="badge-face relative">
+                          <Image
+                            src={badge.badge}
+                            alt={badge.name}
+                            width={300}
+                            height={300}
+                            className="w-full h-auto object-contain"
+                          />
+                          {/* Shine streak */}
                           <div
-                            className="absolute top-[-20%] bottom-[-20%] badge-shine-streak"
+                            className="absolute inset-0 pointer-events-none"
                             style={{
-                              width: "25%",
-                              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12) 20%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.12) 80%, transparent)",
-                              transform: "skewX(-15deg)",
+                              WebkitMaskImage: `url(${badge.badge})`,
+                              WebkitMaskSize: "contain",
+                              WebkitMaskRepeat: "no-repeat",
+                              WebkitMaskPosition: "center",
+                              maskImage: `url(${badge.badge})`,
+                              maskSize: "contain",
+                              maskRepeat: "no-repeat",
+                              maskPosition: "center",
                             }}
+                          >
+                            <div
+                              className="absolute top-[-20%] bottom-[-20%] badge-shine-streak"
+                              style={{
+                                width: "25%",
+                                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12) 20%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.12) 80%, transparent)",
+                                transform: "skewX(-15deg)",
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="badge-back">
+                          <Image
+                            src="/badges/badge_back.png"
+                            alt=""
+                            width={300}
+                            height={300}
+                            className="w-full h-auto object-contain"
                           />
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Info outside */}
-                  <div className="pt-3 px-1">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <h4 className="text-sm font-bold text-white truncate">
-                        {badge.name}
-                      </h4>
-                      <TierLabel tier={badge.tier} />
-                    </div>
-                    <p className="text-[11px] text-zinc-500 leading-relaxed mb-1.5">
+                    {/* Ground shadow */}
+                    <div
+                      className="w-[55%] h-3 rounded-full mb-3 z-10"
+                      style={{
+                        background: `radial-gradient(ellipse at center, ${badge.color}35 0%, transparent 70%)`,
+                        filter: "blur(6px)",
+                      }}
+                    />
+
+                    {/* Name */}
+                    <h3 className="font-display text-sm text-white tracking-tight mb-1 uppercase z-10 leading-tight">
+                      {badge.name}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="text-[10px] text-zinc-500 italic leading-relaxed mb-3 line-clamp-2 max-w-[95%] z-10">
                       {badge.description}
                     </p>
-                    <span className="text-[10px] text-zinc-600 font-medium uppercase tracking-wider">
+
+                    {/* Chain pill */}
+                    <span className="text-[10px] text-zinc-600 font-medium uppercase tracking-wider z-10">
                       {badge.chain}
                     </span>
                   </div>
@@ -1508,42 +1717,120 @@ export default function DashboardPage() {
                   { id: "multichain", key: "multichain-2", name: "Multichain Maximalist", image: "/cards/multi-chain.png", tier: "T3" },
                   { id: "validator", key: "validator-2", name: "The Validator", image: "/cards/eth_steak.png", tier: "T2" },
                   { id: "rug-victim", key: "rug-victim-2", name: "Rug Victim", image: "/cards/emn_rug.png", tier: "T2" },
-                ].map((badge) => (
+                ].map((badge) => {
+                  const badgeImg = cardToBadge[badge.image];
+                  const tColor = tierConfig[badge.tier]?.color ?? "#60a5fa";
+                  return (
                   <Link
                     key={(badge as any).key || badge.id}
                     href={`/achievements/card/${badge.id}`}
                     className="flex-shrink-0 group"
                   >
                     <div
-                      className="relative rounded-2xl p-2.5 w-[200px] sm:w-[240px] md:w-[260px] cursor-pointer group-hover:-translate-y-2 transition-transform duration-300"
+                      className="relative rounded-2xl overflow-hidden w-[220px] sm:w-[260px] md:w-[280px] px-4 pt-5 pb-4 flex flex-col items-center text-center cursor-pointer group-hover:-translate-y-2 transition-transform duration-300"
                       style={{
-                        background: "rgba(255,255,255,0.02)",
+                        background: "linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.008) 100%)",
                         border: "1px solid rgba(255,255,255,0.06)",
+                        boxShadow: `0 4px 24px rgba(0,0,0,0.3), 0 0 40px ${tColor}05`,
                       }}
                     >
-                      <div className="card-3d relative">
+                      {/* Card art background */}
+                      <div className="absolute inset-0 pointer-events-none z-0">
                         <Image
                           src={badge.image}
-                          alt={badge.name}
-                          width={240}
-                          height={336}
-                          className="w-full h-auto rounded-lg"
+                          alt=""
+                          width={400}
+                          height={560}
+                          className="absolute inset-0 w-full h-full object-cover"
+                          style={{ filter: "blur(12px) brightness(0.28) saturate(0.7)" }}
+                        />
+                        <div
+                          className="absolute inset-0"
+                          style={{ background: "radial-gradient(ellipse at center, transparent 20%, #060611 75%)" }}
+                        />
+                        <div
+                          className="absolute inset-0"
+                          style={{ background: "linear-gradient(to bottom, transparent 30%, #060611 85%)" }}
                         />
                       </div>
-                    </div>
-                    <div className="pt-3 px-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-bold text-white truncate">{badge.name}</h4>
-                        <TierLabel tier={badge.tier} />
-                      </div>
+
+                      {/* Badge 3D spin */}
+                      {badgeImg && (
+                        <div
+                          className="relative w-[85%] mb-2 z-10"
+                          style={{
+                            filter: `drop-shadow(0 16px 32px rgba(0,0,0,0.7)) drop-shadow(0 6px 16px ${tColor}30)`,
+                            perspective: "800px",
+                          }}
+                        >
+                          <div className="badge-3d-spin relative">
+                            <div className="badge-face relative">
+                              <Image
+                                src={badgeImg}
+                                alt={badge.name}
+                                width={300}
+                                height={300}
+                                className="w-full h-auto object-contain"
+                              />
+                              {/* Shine streak */}
+                              <div
+                                className="absolute inset-0 pointer-events-none"
+                                style={{
+                                  WebkitMaskImage: `url(${badgeImg})`,
+                                  WebkitMaskSize: "contain",
+                                  WebkitMaskRepeat: "no-repeat",
+                                  WebkitMaskPosition: "center",
+                                  maskImage: `url(${badgeImg})`,
+                                  maskSize: "contain",
+                                  maskRepeat: "no-repeat",
+                                  maskPosition: "center",
+                                }}
+                              >
+                                <div
+                                  className="absolute top-[-20%] bottom-[-20%] badge-shine-streak"
+                                  style={{
+                                    width: "25%",
+                                    background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12) 20%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.12) 80%, transparent)",
+                                    transform: "skewX(-15deg)",
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            <div className="badge-back">
+                              <Image
+                                src="/badges/badge_back.png"
+                                alt=""
+                                width={300}
+                                height={300}
+                                className="w-full h-auto object-contain"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Ground shadow */}
+                      <div
+                        className="w-[55%] h-3 rounded-full mb-3 z-10"
+                        style={{
+                          background: `radial-gradient(ellipse at center, ${tColor}35 0%, transparent 70%)`,
+                          filter: "blur(6px)",
+                        }}
+                      />
+
+                      {/* Name */}
+                      <h3 className="font-display text-sm text-white tracking-tight mb-1 uppercase z-10 leading-tight">
+                        {badge.name}
+                      </h3>
                     </div>
                   </Link>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </motion.div>
         </div>
-        {isConnected && <RightSidebar />}
+        {authenticated ? <RightSidebar /> : <SignInPrompt />}
       </div>
     </DashboardLayout>
   );

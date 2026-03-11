@@ -6,19 +6,20 @@ import { Play, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-const heroCards = [
-  { src: "/cards/8.png", alt: "Sandwich'd", beam: "#84cc16" },
-  { src: "/cards/gas_guzzler.png", alt: "Gas Guzzler", beam: "#f97316" },
-  { src: "/cards/etherean (2).png", alt: "The Etherean", beam: "#60a5fa" },
-  { src: "/cards/multi-chain.png", alt: "Multichain Maximalist", beam: "#c084fc" },
-  { src: "/cards/opensea (2).png", alt: "Opensea VIP", beam: "#22d3ee" },
+const heroBadges = [
+  { src: "/badges/sandwichd.png", alt: "Sandwich'd", beam: "#84cc16" },
+  { src: "/badges/gas_guzzler.png", alt: "Gas Guzzler", beam: "#f97316" },
+  { src: "/badges/etheran.png", alt: "The Etherean", beam: "#60a5fa" },
+  { src: "/badges/multichain_madness.png", alt: "Multichain Maximalist", beam: "#c084fc" },
+  { src: "/badges/opensea_badge.png", alt: "Opensea VIP", beam: "#22d3ee" },
 ];
+
 
 export default function Hero() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-start pt-36 pb-0 overflow-hidden">
+    <section className="relative flex flex-col items-center justify-start pt-36 pb-0 overflow-hidden">
       {/* Video background */}
       <div className="absolute inset-0 overflow-hidden">
         <video
@@ -44,9 +45,7 @@ export default function Hero() {
 
       {/* Subtle gradient accents for depth */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Top center warm glow */}
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-accent-orange/[0.04] rounded-full blur-[120px]" />
-        {/* Bottom center glow behind cards */}
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[900px] h-[400px] bg-accent-orange/[0.03] rounded-full blur-[100px]" />
       </div>
 
@@ -136,30 +135,30 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* Fanned card images — large, well-spaced, like the reference */}
+      {/* Fanned badge display — replaces old card fan */}
       <motion.div
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7, duration: 1, ease: "easeOut" }}
-        className="relative z-10 w-full flex justify-center -mt-16"
+        className="relative z-10 w-full flex justify-center -mt-6"
       >
-        <div className="relative h-[500px] sm:h-[580px] w-full max-w-7xl mx-auto flex items-end justify-center">
-          {/* Glow behind cards */}
+        <div className="relative h-[440px] sm:h-[520px] w-full max-w-7xl mx-auto flex items-end justify-center">
+          {/* Glow behind badges */}
           <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-[900px] h-[300px] bg-accent-orange/[0.06] rounded-full blur-3xl" />
 
-          {heroCards.map((card, i) => {
-            const total = heroCards.length;
+          {heroBadges.map((badge, i) => {
+            const total = heroBadges.length;
             const mid = (total - 1) / 2;
             const offset = i - mid;
-            const rotate = offset * 8;
-            const translateX = offset * 170;
-            const translateY = Math.abs(offset) * 35 + 40;
+            const rotate = offset * 7;
+            const translateX = offset * 220;
+            const translateY = Math.abs(offset) * 40 + 20;
             const zIndex = total - Math.abs(Math.round(offset));
             const isHovered = hoveredCard === i;
 
             return (
               <motion.div
-                key={card.alt}
+                key={badge.alt}
                 className="absolute origin-bottom"
                 initial={false}
                 animate={{
@@ -176,7 +175,7 @@ export default function Hero() {
                 onHoverStart={() => setHoveredCard(i)}
                 onHoverEnd={() => setHoveredCard(null)}
               >
-                {/* Beam of light — centered behind card */}
+                {/* Beam of light */}
                 <AnimatePresence>
                   {isHovered && (
                     <motion.div
@@ -186,23 +185,21 @@ export default function Hero() {
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.4, ease: "easeOut" }}
                     >
-                      {/* Vertical beam */}
                       <div
                         className="absolute left-1/2 -translate-x-1/2"
                         style={{
                           bottom: 0,
                           width: "600px",
                           height: "1400px",
-                          background: `linear-gradient(to top, ${card.beam}80 0%, ${card.beam}50 10%, ${card.beam}30 30%, ${card.beam}15 55%, transparent 85%)`,
+                          background: `linear-gradient(to top, ${badge.beam}80 0%, ${badge.beam}50 10%, ${badge.beam}30 30%, ${badge.beam}15 55%, transparent 85%)`,
                           filter: "blur(45px)",
                           transform: "translateX(-50%)",
                         }}
                       />
-                      {/* Glow behind card */}
                       <div
                         className="absolute inset-0"
                         style={{
-                          background: `radial-gradient(ellipse at center, ${card.beam}40 0%, ${card.beam}15 40%, transparent 70%)`,
+                          background: `radial-gradient(ellipse at center, ${badge.beam}40 0%, ${badge.beam}15 40%, transparent 70%)`,
                           filter: "blur(25px)",
                           margin: "-48px",
                         }}
@@ -211,15 +208,17 @@ export default function Hero() {
                   )}
                 </AnimatePresence>
 
-                <div className="card-3d w-[280px] sm:w-[320px]">
+                <div className="relative w-[340px] sm:w-[400px]">
                   <Image
-                    src={card.src}
-                    alt={card.alt}
-                    width={320}
-                    height={448}
-                    className="w-full h-auto object-cover"
+                    src={badge.src}
+                    alt={badge.alt}
+                    width={400}
+                    height={400}
+                    className="w-full h-auto object-contain drop-shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
                     priority
                   />
+                  {/* Shimmer shine on badge */}
+                  <div className="absolute inset-0 shimmer opacity-40 rounded-full pointer-events-none" />
                 </div>
               </motion.div>
             );
@@ -228,7 +227,7 @@ export default function Hero() {
       </motion.div>
 
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-bg-primary via-bg-primary/80 to-transparent z-20 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-bg-primary via-bg-primary/60 to-transparent z-20 pointer-events-none" />
     </section>
   );
 }
